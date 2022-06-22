@@ -6,11 +6,15 @@ library(ggplot2) #library for basic plots
 library(tidyverse) #megapackage for analysis/operations
 library(readr) #library for taking in 
 
+# Loading in CSV and creating autocomplete list -----
 studentData <- read.csv("data/dummy_midas_data2.csv")
 rStudentData <- reactiveValues(data = studentData)
 selectedStudent <- reactiveValues(data = NULL)
 autocomplete_list <- paste0(studentData$lastName, ",", studentData$firstName)
 
+
+# *Tab definitions* -----
+# schoolTab =====
 schoolTab <- tabItem(tabName = "Dashboard",
                      plotOutput("totalBar"),
                      plotOutput("socialBar"),
@@ -19,7 +23,7 @@ schoolTab <- tabItem(tabName = "Dashboard",
                      div(style='height:100vh; width:100vh; overflow: scroll',
                          tableOutput("contentsTable"))
 )
-
+# uploadTab =====
 uploadTab <- tabItem(tabName = "Upload",
                      fluidRow(
                        box(width = 12,
@@ -40,7 +44,7 @@ uploadTab <- tabItem(tabName = "Upload",
                      )
                      #end of fluidRow
 )
-
+# studentTab =====
 studentTab <- tabItem(tabName = "studentTab",
                       # This column contains: student image, name, age, gender, ethnicity, grade, and special ed status
                       fluidRow(
@@ -102,7 +106,7 @@ studentTab <- tabItem(tabName = "studentTab",
                         ))
 )
 
-
+# classTab =====
 classTab <- tabItem(tabName = "classTab",
                     column(
                       6,
@@ -112,7 +116,7 @@ classTab <- tabItem(tabName = "classTab",
                       6,
                       div(style = "background-color: #d0df92; padding: 5px; border-radius: 25px; height: 90%;")
                     ))
-
+# archiveTab =====
 archiveTab <- tabItem(tabName = "archiveTab",
                       column(
                         12,
@@ -120,12 +124,14 @@ archiveTab <- tabItem(tabName = "archiveTab",
                       ))
 
 
-# Define UI
+
+# *Core Shiny UI and Server* -----
+# UI -----
 ui <- dashboardPage(
   dashboardHeader(
     title = "Project MIDAS"
   ),
-  
+  # Sidebar =====
   sidebar = dashboardSidebar(
     sidebarMenu(id = "tabs",
                 menuItem(text = "Upload Data", tabName = "Upload", icon = icon("tachometer-alt")),
@@ -136,6 +142,7 @@ ui <- dashboardPage(
                 )
   ),
   
+  # Body =====
   body = dashboardBody(
     shinyjs::useShinyjs(),
     fluidPage(
@@ -155,16 +162,14 @@ ui <- dashboardPage(
     )
   )
 )
-#end of UI
 
+# Server -----
 server <- function(input, output) {
   #Risk minimums reflect total score minimums from fastbridge site Thomas sent.
   lowRiskMin <- 37
   someRiskMin <- 24
   first <- reactiveVal()
   last <- reactiveVal()
-  
-  #print(autocomplete_list)
   
   observeEvent(input$btnStudentName, {
     last(strsplit(input$txtinStudentName, ",")[[1]][1])
@@ -302,6 +307,8 @@ server <- function(input, output) {
            "all" = return(df))
   })
 }
-# necessary shiny app line. 
-shinyApp(ui = ui, server = server)
 
+
+
+# *Shiny Initialization* ---- 
+shinyApp(ui = ui, server = server)
