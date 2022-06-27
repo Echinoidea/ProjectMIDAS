@@ -122,7 +122,20 @@ archiveTab <- tabItem(tabName = "archiveTab",
                         12,
                         div(style = "background-color: #d0df92; padding: 5px; border-radius: 25px; height: 100%;")
                       ))
-
+# faqTab =====
+faqTab <- tabItem(tabName = "faqTab",
+                  column(
+                    12,
+                    div(style = "background-color: #d0df92; padding: 5px; border-radius: 25px; height: 100%;",
+                        p("FAQ:"))
+                  ))
+# interpretTab =====
+interpretTab <- tabItem(tabName = "interpretTab",
+                        column(
+                          12,
+                          div(style = "background-color: #d0df92; padding: 10px; border-radius: 25px; height: 100%;",
+                              HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/0x5OG2yBSF8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'))
+                        ))
 
 
 # *Core Shiny UI and Server* -----
@@ -134,11 +147,13 @@ ui <- dashboardPage(
   # Sidebar =====
   sidebar = dashboardSidebar(
     sidebarMenu(id = "tabs",
-                menuItem(text = "Upload Data", tabName = "Upload", icon = icon("tachometer-alt")),
-                menuItem(text = "Dashboard", tabName = "Dashboard", icon = icon("tachometer-alt")),
-                menuItem("Student", tabName = "studentTab"),
-                menuItem("Class", tabName = "classTab"),
-                menuItem("Archive", tabName = "archiveTab")
+                menuItem("Upload Data", tabName = "Upload", icon = icon("upload")),
+                menuItem("School", tabName = "Dashboard", icon = icon("school")),
+                menuItem("Class", tabName = "classTab", icon = icon("users")),
+                menuItem("Student", tabName = "studentTab", icon = icon("user-graduate")),
+                menuItem("Archive", tabName = "archiveTab", icon = icon("archive")),
+                menuItem("Frequently Asked Questions", tabName = "faqTab", icon = icon("question-circle-o")),
+                menuItem("How To Interpret This Data", tabName = "interpretTab", icon = icon("info"))
     )
   ),
   
@@ -156,7 +171,11 @@ ui <- dashboardPage(
         #Class - Displaying class data
         classTab,
         #Archive - under construction?
-        archiveTab
+        archiveTab,
+        #FAQ - Frequently Asked Questions (to be filled out by College of Ed.)
+        faqTab,
+        #Intepret - How the data is interpreted (to contain videos by CoE)
+        interpretTab
       )
       #end of tabs
     )
