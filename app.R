@@ -16,29 +16,41 @@ autocomplete_list <- paste0(studentData$lastName, ",", studentData$firstName)
 # *Tab definitions* -----
 # schoolTab =====
 schoolTab <- tabItem(tabName = "Dashboard",
-                     plotOutput("totalBar"),
-                     plotOutput("socialBar"),
-                     plotOutput("academicBar"),
-                     plotOutput("emotionalBar"),
-                     div(style='height:100vh; width:100vh; overflow: scroll',
+                     actionButton("Warning", "Click Here To Upload School Files in Upload Files"),
+                     fluidRow(splitLayout(cellWidths = c("50%", "50%"), 
+                                          plotOutput("totalBar"),
+                                          plotOutput("socialBar"))
+                              ),
+                     fluidRow(splitLayout(cellWidths = c("50%", "50%"), 
+                                          plotOutput("academicBar"),
+                                          plotOutput("emotionalBar"))
+                              ),
+                     fluidRow(splitLayout(cellwidths = c("50%", "50%"),
+                                          radioButtons("level", "What Total Risk Levels should the Table display?",
+                                                      c("All" = "alltotal",
+                                                        "Low" = "lowtotal",
+                                                        "Some" = "sometotal",
+                                                        "High" = "hightotal")),
+                                         radioButtons("specialed", "Show",
+                                                      c("All Students" = "high",
+                                                        "No Special Education" = "nspecialed",
+                                                        "Only Special Education" = "yspecialed"))
+                                         )
+                              ),
+                     div(style='height:100%; width:100%; overflow: scroll; background-color: #dce0b4',
                          tableOutput("contentsTable"))
 )
 # uploadTab =====
 uploadTab <- tabItem(tabName = "Upload",
                      fluidRow(
                        box(width = 12,
-                           fileInput("file1", "Please Upload File",
+                           fileInput("file1", "Please Upload File (.csv, .xls, .xlsx)",
                                      multiple = FALSE,
                                      accept = c("text/csv", ".xlsx",
                                                 "text/comma-separated-values,text/plain",
                                                 ".csv",
                                                 '.xlsx')
-                           ),
-                           radioButtons("level", "What Total Risk Levels should the Table display?",
-                                        c("All" = "all",
-                                          "Low" = "low",
-                                          "Some" = "some",
-                                          "High" = "high"))
+                           )
                        )
                        #end of box
                      )
@@ -109,12 +121,11 @@ studentTab <- tabItem(tabName = "studentTab",
 # classTab =====
 classTab <- tabItem(tabName = "classTab",
                     column(
-                      6,
-                      div(style = "background-color: #d0df92; padding: 5px; border-radius: 25px; height: 5%;")
-                    ),
-                    column(
-                      6,
-                      div(style = "background-color: #d0df92; padding: 5px; border-radius: 25px; height: 90%;")
+                      12,
+                      div(style = "background-color: #d0df92; padding: 5px; border-radius: 25px; height: 5%;",
+                          p("Class Information To Go Here (Data by Class)"),
+                          br(),
+                          p("This should look similar to School View, but allow selections by teacher/class"))
                     ))
 # archiveTab =====
 archiveTab <- tabItem(tabName = "archiveTab",
@@ -183,12 +194,23 @@ ui <- dashboardPage(
 )
 
 # Server -----
-server <- function(input, output) {
+server <- function(input, output, session) {
   #Risk minimums reflect total score minimums from fastbridge site Thomas sent.
   lowRiskMin <- 37
   someRiskMin <- 24
   first <- reactiveVal()
   last <- reactiveVal()
+  
+  observeEvent(input$Warning, {
+    updateTabItems(session, "tabs", selected = "Upload")
+  })
+  
+  observeEvent(input$file1, {
+    removeUI( selector = "#Warning",
+              multiple = F
+              )
+    updateTabItems(session, "tabs", selected = "Dashboard")
+  })
   
   observeEvent(input$btnStudentName, {
     last(strsplit(input$txtinStudentName, ",")[[1]][1])
@@ -320,10 +342,10 @@ server <- function(input, output) {
     # This switch is used for demo purposes, needs to be changed for our dashboarding needs
     switch(input$level,
            # Depending on radiobutton selected, the returned table reflects one risk group.
-           "low" = return(df[df$totalBehavior > lowRiskMin,]),
-           "some" = return(df[df$totalBehavior > someRiskMin & df$totalBehavior < lowRiskMin,]),
-           "high" = return(df[df$totalBehavior < someRiskMin,]),
-           "all" = return(df))
+           "lowtotal" = return(df[df$totalBehavior > lowRiskMin,]),
+           "sometotal" = return(df[df$totalBehavior > someRiskMin & df$totalBehavior < lowRiskMin,]),
+           "hightotal" = return(df[df$totalBehavior < someRiskMin,]),
+           "alltotal" = return(df))
   })
 }
 
