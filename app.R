@@ -49,7 +49,7 @@ uploadTab <- tabItem(tabName = "Upload",
                                      accept = c("text/csv", ".xlsx",
                                                 "text/comma-separated-values,text/plain",
                                                 ".csv",
-                                                '.xlsx')
+                                                ".xlsx")
                            )
                        )
                        #end of box

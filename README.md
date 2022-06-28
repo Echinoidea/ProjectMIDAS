@@ -15,4 +15,4 @@ Student - Will show basic data on a student and auto-completes based on given sp
 
 FAQ - Aims to be a textbox or English text displaying some Frequently Asked Questions
 
-How To Interpret - Shows a basic video component from the College of Education.
+How To Interpret - Shows a basic video component from the College of Education..
