@@ -259,7 +259,7 @@ server <- function(input, output, session) {
     df_tbrange
     totalbar <- barplot(df_tbrange$n, main = "Total Behavior Distribution", 
                         xlab="Percentage of School",
-                        col="darkred",
+                        col= c("red", "yellow", "green"),
                         names.arg=c("High Risk", "Some Risk", "Low Risk")
     )
   })
@@ -279,7 +279,7 @@ server <- function(input, output, session) {
     df_sbrange
     totalbar <- barplot(df_sbrange$n, main = "Social Behavior Distribution", 
                         xlab="Percentage of School",
-                        col="darkred",
+                        col=c("red", "yellow", "green"),
                         names.arg=c("High Risk", "Some Risk", "Low Risk")
     )
   })
@@ -299,7 +299,7 @@ server <- function(input, output, session) {
     df_abrange
     totalbar <- barplot(df_abrange$n, main = "Academic Behavior Distribution", 
                         xlab="Percentage of School",
-                        col="darkred",
+                        col= c("red", "yellow", "green"),
                         names.arg=c("High Risk", "Some Risk", "Low Risk")
     )
   })
@@ -319,7 +319,7 @@ server <- function(input, output, session) {
     df_ebrange
     totalbar <- barplot(df_ebrange$n, main = "Emotional Behavior Distribution", 
                         xlab="Percentage of School",
-                        col="darkred",
+                        col= c("red", "yellow", "green"),
                         names.arg=c("High Risk", "Some Risk", "Low Risk")
     )
   })
