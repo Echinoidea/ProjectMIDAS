@@ -9,9 +9,9 @@ library(tidyverse) #megapackage for analysis/operations
 library(readr) #library for taking in CSV
 
 # Loading in CSV and creating autocomplete list -----
-studentData <- read.csv("data/dummy_midas_data2.csv") #attempting to remove this line.
+#studentData <- read.csv("data/dummy_midas_data2.csv") #attempting to remove this line.
 selectedStudent <- reactiveValues(data = NULL)
-autocomplete_list <- paste0(studentData$lastName, ",", studentData$firstName)
+#autocomplete_list <- paste0(studentData$lastName, ",", studentData$firstName)
 #rStudentData <- reactiveValues(data = studentData)
 
 # *Tab definitions* -----
@@ -65,6 +65,7 @@ uploadTab <- tabItem(tabName = "Upload",
 )
 # studentTab =====
 studentTab <- tabItem(tabName = "studentTab",
+                      actionButton("WarningStudent", "Click Here To Upload School Files in Upload Files",), 
                       fluidRow( 
                         splitLayout(
                       # This column contains: student image, name, age, gender, ethnicity, grade, and special ed status
@@ -86,13 +87,10 @@ studentTab <- tabItem(tabName = "studentTab",
                               br(), br(),
                               
                               # Name search (changed to autocomplete to avoid crashes)
-                              selectizeInput(
+                              textInput(
                                 "txtinStudentName",
-                                label = "Student Name (Last, First)",
-                                choices = c("", autocomplete_list),
-                                selected = '',
-                                multiple = FALSE,
-                                options = list(create = FALSE)
+                                label = "Student ID",
+                                placeholder = "   s###"
                               ),
                               actionButton("btnStudentName", label = "Search"),
                               br(), br(),
@@ -102,6 +100,14 @@ studentTab <- tabItem(tabName = "studentTab",
                                 column(
                                   12,
                                   align = "center",
+                                  
+                                  p(tags$b("First Name")),
+                                  textOutput("studentFirstName"),
+                                  br(),
+                                  
+                                  p(tags$b("Last Name")),
+                                  textOutput("studentLastName"),
+                                  br(),
                                   
                                   p(tags$b("Gender")),
                                   textOutput("studentGender"),
@@ -222,10 +228,16 @@ server <- function(input, output, session) {
   observeEvent(input$Warning, {
     updateTabItems(session, "tabs", selected = "Upload")
   })
+  observeEvent(input$WarningStudent, {
+    updateTabItems(session, "tabs", selected = "Upload")
+  })
   
   #On Upload, sends user to School Page.
   observeEvent(input$file1, {
     removeUI( selector = "#Warning",
+              multiple = F
+    )
+    removeUI( selector = "#WarningStudent",
               multiple = F
     )
     updateTabItems(session, "tabs", selected = "Dashboard")
@@ -245,9 +257,7 @@ server <- function(input, output, session) {
   
   #On user searching a name, find student in the user's provided data and assign it for display
   observeEvent(input$btnStudentName, {
-    last(strsplit(input$txtinStudentName, ",")[[1]][1])
-    first(str_trim(strsplit(input$txtinStudentName, ",")[[1]][2]))
-    selectedStudent$data <- subset(df(), lastName == last() & firstName == first())
+    selectedStudent$data <- subset(df(), sID == input$txtinStudentName)
   })
   
   output$faqtext <- renderUI({
@@ -279,6 +289,12 @@ server <- function(input, output, session) {
   })
   output$studentSpecialEd <- renderText({
     selectedStudent$data$specialEducation
+  })
+  output$studentFirstName <- renderText({
+    selectedStudent$data$firstName
+  })
+  output$studentLastName <- renderText({
+    selectedStudent$data$lastName
   })
   
   #School-wide TRS bargraph outputs
