@@ -1,4 +1,5 @@
 library(shiny) #library for running Shiny Webapp
+library(reshape2)
 library(shinyjs) #library for js functions
 library(shinydashboard) #dashboarding library
 library(readxl) #library for taking in XLS/XLSX
@@ -12,17 +13,15 @@ rStudentData <- reactiveValues(data = studentData)
 selectedStudent <- reactiveValues(data = NULL)
 autocomplete_list <- paste0(studentData$lastName, ",", studentData$firstName)
 
-
 # *Tab definitions* -----
 # schoolTab =====
 schoolTab <- tabItem(tabName = "Dashboard",
                      actionButton("Warning", "Click Here To Upload School Files in Upload Files"),
-                     fluidRow(splitLayout(cellWidths = c("50%", "50%"), 
-                                          plotOutput("totalBar"),
+                     # 4-4 split bars, 
+                     fluidRow(splitLayout(plotOutput("totalBar"),
                                           plotOutput("socialBar"))
                               ),
-                     fluidRow(splitLayout(cellWidths = c("50%", "50%"), 
-                                          plotOutput("academicBar"),
+                     fluidRow(splitLayout(plotOutput("academicBar"),
                                           plotOutput("emotionalBar"))
                               ),
                      fluidRow(splitLayout(cellwidths = c("50%", "50%"),
@@ -31,6 +30,7 @@ schoolTab <- tabItem(tabName = "Dashboard",
                                                         "Low" = "lowtotal",
                                                         "Some" = "sometotal",
                                                         "High" = "hightotal")),
+                                          #To-Do: Grade Level Selection(6,7,8 grade)
                                          radioButtons("specialed", "Show",
                                                       c("All Students" = "high",
                                                         "No Special Education" = "nspecialed",
@@ -115,7 +115,10 @@ studentTab <- tabItem(tabName = "studentTab",
                         column(
                           8,
                           div(style = "background-color: #d0df92; padding: 5px; border-radius: 25px; height: 90%;")
-                        ))
+                              ),
+                          plotOutput("studenttotalBar")
+                          #plotOutput for the student's MIDAS Data, both TRS and mySAEBERS
+                        )
 )
 
 # classTab =====
@@ -157,13 +160,13 @@ ui <- dashboardPage(
   ),
   # Sidebar =====
   sidebar = dashboardSidebar(
-    sidebarMenu(id = "tabs",
+    sidebarMenu(id = "tabs", 
                 menuItem("Upload Data", tabName = "Upload", icon = icon("upload")),
                 menuItem("School", tabName = "Dashboard", icon = icon("school")),
                 menuItem("Class", tabName = "classTab", icon = icon("users")),
                 menuItem("Student", tabName = "studentTab", icon = icon("user-graduate")),
                 menuItem("Archive", tabName = "archiveTab", icon = icon("archive")),
-                menuItem("Frequently Asked Questions", tabName = "faqTab", icon = icon("question-circle-o")),
+                menuItem("Frequently Asked Questions", tabName = "faqTab", icon = icon("question-circle")),
                 menuItem("How To Interpret This Data", tabName = "interpretTab", icon = icon("info"))
     )
   ),
@@ -205,17 +208,30 @@ server <- function(input, output, session) {
     updateTabItems(session, "tabs", selected = "Upload")
   })
   
+  #On Upload, sends user to School Page.
   observeEvent(input$file1, {
     removeUI( selector = "#Warning",
               multiple = F
-              )
+    )
     updateTabItems(session, "tabs", selected = "Dashboard")
+  })
+  
+  #On Upload, distributes this dataframe to all necessary functions at once.
+  df = eventReactive(input$file1, {
+    inFile <- input$file1
+    extension <- tools::file_ext(inFile$name)
+    filepath <- inFile$datapath
+    df <- switch(extension,
+                 csv = readr::read_csv(filepath),
+                 xls = readxl::read_xls(filepath),
+                 xlsx = readxl::read_xlsx(filepath)
+    )
   })
   
   observeEvent(input$btnStudentName, {
     last(strsplit(input$txtinStudentName, ",")[[1]][1])
     first(str_trim(strsplit(input$txtinStudentName, ",")[[1]][2]))
-    selectedStudent$data <- subset(rStudentData$data, lastName == last() & firstName == first())
+    selectedStudent$data <- subset(df(), lastName == last() & firstName == first())
   })
   
   output$studentGender <- renderText({
@@ -245,16 +261,7 @@ server <- function(input, output, session) {
   })
   
   output$totalBar <- renderPlot({
-    req(input$file1)
-    inFile <- input$file1
-    extension <- tools::file_ext(inFile$name)
-    filepath <- inFile$datapath
-    df <- switch(extension,
-                 csv = readr::read_csv(filepath),
-                 xls = readxl::read_xls(filepath),
-                 xlsx = readxl::read_xlsx(filepath)
-    )
-    df_tbrange <- df %>% mutate(ranges = cut(totalBehavior, c(0, 24, 37, Inf))) %>%
+    df_tbrange <- df() %>% mutate(ranges = cut(totalBehavior, c(0, 24, 37, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
     df_tbrange
     totalbar <- barplot(df_tbrange$n, main = "Total Behavior Distribution", 
@@ -265,16 +272,7 @@ server <- function(input, output, session) {
   })
   
   output$socialBar <- renderPlot({
-    req(input$file1)
-    inFile <- input$file1
-    extension <- tools::file_ext(inFile$name)
-    filepath <- inFile$datapath
-    df <- switch(extension,
-                 csv = readr::read_csv(filepath),
-                 xls = readxl::read_xls(filepath),
-                 xlsx = readxl::read_xlsx(filepath)
-    )
-    df_sbrange <- df %>% mutate(ranges = cut(socialBehavior, c(0, 9, 12, Inf))) %>%
+    df_sbrange <- df() %>% mutate(ranges = cut(socialBehavior, c(0, 9, 12, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
     df_sbrange
     totalbar <- barplot(df_sbrange$n, main = "Social Behavior Distribution", 
@@ -285,16 +283,7 @@ server <- function(input, output, session) {
   })
   
   output$academicBar <- renderPlot({
-    req(input$file1)
-    inFile <- input$file1
-    extension <- tools::file_ext(inFile$name)
-    filepath <- inFile$datapath
-    df <- switch(extension,
-                 csv = readr::read_csv(filepath),
-                 xls = readxl::read_xls(filepath),
-                 xlsx = readxl::read_xlsx(filepath)
-    )
-    df_abrange <- df %>% mutate(ranges = cut(academicBehavior, c(0, 6, 9, Inf))) %>%
+    df_abrange <- df() %>% mutate(ranges = cut(academicBehavior, c(0, 6, 9, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
     df_abrange
     totalbar <- barplot(df_abrange$n, main = "Academic Behavior Distribution", 
@@ -305,16 +294,7 @@ server <- function(input, output, session) {
   })
   
   output$emotionalBar <- renderPlot({
-    req(input$file1)
-    inFile <- input$file1
-    extension <- tools::file_ext(inFile$name)
-    filepath <- inFile$datapath
-    df <- switch(extension,
-                 csv = readr::read_csv(filepath),
-                 xls = readxl::read_xls(filepath),
-                 xlsx = readxl::read_xlsx(filepath)
-    )
-    df_ebrange <- df %>% mutate(ranges = cut(emotionalBehavior, c(0, 7, 10, Inf))) %>%
+    df_ebrange <- df() %>% mutate(ranges = cut(emotionalBehavior, c(0, 7, 10, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
     df_ebrange
     totalbar <- barplot(df_ebrange$n, main = "Emotional Behavior Distribution", 
@@ -324,28 +304,35 @@ server <- function(input, output, session) {
     )
   })
   
+  #School-wide MySAEBERS Scores as reactive functions. 
+  low_total_MS <- reactive({
+    tmp <- df()
+    tmp[tmp$totalBehavior > lowRiskMin,]
+  })
+  some_total_MS <- reactive({
+    tmp <- df()
+    tmp[tmp$totalBehavior > someRiskMin & tmp$totalBehavior < lowRiskMin,]
+  })
+  high_total_MS <- reactive({
+    tmp <- df()
+    tmp[tmp$totalBehavior < someRiskMin,]
+  })
+  all_total_MS <- reactive({
+    tmp <- df()
+  })
+  
   output$contentsTable <- renderTable({
-    # input$file1 will be NULL initially. After the user selects
-    # and uploads a file, all rows that reflect the selected risk level will be shown.
-    
-    req(input$file1)
-    
-    inFile <- input$file1
-    extension <- tools::file_ext(inFile$name)
-    filepath <- inFile$datapath
-    df <- switch(extension,
-                 csv = readr::read_csv(filepath),
-                 xls = readxl::read_xls(filepath),
-                 xlsx = readxl::read_xlsx(filepath)
-    )
     options = list(scrollX = TRUE)
     # This switch is used for demo purposes, needs to be changed for our dashboarding needs
     switch(input$level,
            # Depending on radiobutton selected, the returned table reflects one risk group.
-           "lowtotal" = return(df[df$totalBehavior > lowRiskMin,]),
-           "sometotal" = return(df[df$totalBehavior > someRiskMin & df$totalBehavior < lowRiskMin,]),
-           "hightotal" = return(df[df$totalBehavior < someRiskMin,]),
-           "alltotal" = return(df))
+           "lowtotal" = return(low_total_MS()),
+           "sometotal" = return(some_total_MS()),
+           "hightotal" = return(high_total_MS()),
+           "alltotal" = return(all_total_MS()))
+  })
+  
+  output$studenttotalBar <- renderPlot({
   })
 }
 
