@@ -25,11 +25,11 @@ schoolTab <- tabItem(tabName = "Dashboard",
                                           plotOutput("emotionalBar"))
                               ),
                      fluidRow(splitLayout(cellwidths = c("50%", "50%"),
-                                          radioButtons("level", "What Total Risk Levels should the Table display?",
-                                                      c("All" = "alltotal",
-                                                        "Low" = "lowtotal",
-                                                        "Some" = "sometotal",
-                                                        "High" = "hightotal")),
+                                          radioButtons("level", "Show ___ mySAEBERS Risk Levels",
+                                                      c("All" = "alltotalms",
+                                                        "Low" = "lowtotalms",
+                                                        "Some" = "sometotalms",
+                                                        "High" = "hightotalms")),
                                           #To-Do: Grade Level Selection(6,7,8 grade)
                                          radioButtons("grade", "Show",
                                                       c("All Grades" = "allgrades",
@@ -47,7 +47,7 @@ uploadTab <- tabItem(tabName = "Upload",
                        box(width = 12,
                            fileInput("file1", "Please Upload File (.csv, .xls, .xlsx)",
                                      multiple = FALSE,
-                                     accept = c("text/csv", ".xlsx",
+                                     accept = c("text/csv", ".xls",
                                                 "text/comma-separated-values,text/plain",
                                                 ".csv",
                                                 ".xlsx")
@@ -211,6 +211,7 @@ server <- function(input, output, session) {
   first <- reactiveVal()
   last <- reactiveVal()
   
+  #On Clicking warning button, sends user to upload page.
   observeEvent(input$Warning, {
     updateTabItems(session, "tabs", selected = "Upload")
   })
@@ -235,16 +236,17 @@ server <- function(input, output, session) {
     )
   })
   
+  #On user searching a name, find student in the user's provided data and assign it for display
   observeEvent(input$btnStudentName, {
     last(strsplit(input$txtinStudentName, ",")[[1]][1])
     first(str_trim(strsplit(input$txtinStudentName, ",")[[1]][2]))
     selectedStudent$data <- subset(df(), lastName == last() & firstName == first())
   })
   
+  #Student Demographic Characteristics as text output.
   output$studentGender <- renderText({
     selectedStudent$data$gender
   })
-  
   output$studentImage <- renderImage({
     # Load student image
     filename <- normalizePath(file.path('assets/images',
@@ -254,19 +256,59 @@ server <- function(input, output, session) {
     list(src = filename,
          alt = paste("Image not available"))
   }, deleteFile = FALSE)
-  
   output$studentEthnicity <- renderText({
     selectedStudent$data$ethnicity
   })
-  
   output$studentGrade <- renderText({
     selectedStudent$data$grade
   })
-  
   output$studentSpecialEd <- renderText({
     selectedStudent$data$specialEducation
   })
   
+  #School-wide TRS bargraph outputs
+  output$trstotalBar <- renderPlot({
+    df_tbrange <- df() %>% mutate(ranges = cut(TRStotalBehavior, c(0, 24, 37, Inf))) %>%
+      group_by(ranges) %>% tally() %>% as.data.frame()
+    df_tbrange
+    totalbar <- barplot(df_tbrange$n, main = "Total Behavior (TRS)", 
+                        xlab="Percentage of School",
+                        col= c("red", "yellow", "green"),
+                        names.arg=c("High Risk", "Some Risk", "Low Risk")
+    )
+  })
+  output$trssocialBar <- renderPlot({
+    df_sbrange <- df() %>% mutate(ranges = cut(TRSsocialBehavior, c(0, 9, 12, Inf))) %>%
+      group_by(ranges) %>% tally() %>% as.data.frame()
+    df_sbrange
+    totalbar <- barplot(df_sbrange$n, main = "Social Behavior (TRS)", 
+                        xlab="Percentage of School",
+                        col=c("red", "yellow", "green"),
+                        names.arg=c("High Risk", "Some Risk", "Low Risk")
+    )
+  })
+  output$trsacademicBar <- renderPlot({
+    df_abrange <- df() %>% mutate(ranges = cut(TRSacademicBehavior, c(0, 6, 9, Inf))) %>%
+      group_by(ranges) %>% tally() %>% as.data.frame()
+    df_abrange
+    totalbar <- barplot(df_abrange$n, main = "Academic Behavior (TRS)", 
+                        xlab="Percentage of School",
+                        col= c("red", "yellow", "green"),
+                        names.arg=c("High Risk", "Some Risk", "Low Risk")
+    )
+  })
+  output$trsemotionalBar <- renderPlot({
+    df_ebrange <- df() %>% mutate(ranges = cut(TRSemotionalBehavior, c(0, 7, 10, Inf))) %>%
+      group_by(ranges) %>% tally() %>% as.data.frame()
+    df_ebrange
+    totalbar <- barplot(df_ebrange$n, main = "Emotional Behavior (TRS)", 
+                        xlab="Percentage of School",
+                        col= c("red", "yellow", "green"),
+                        names.arg=c("High Risk", "Some Risk", "Low Risk")
+    )
+  })
+  
+  #School-wide MySAEBERS bargraph outputs
   output$totalBar <- renderPlot({
     df_tbrange <- df() %>% mutate(ranges = cut(totalBehavior, c(0, 24, 37, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
@@ -277,7 +319,6 @@ server <- function(input, output, session) {
                         names.arg=c("High Risk", "Some Risk", "Low Risk")
     )
   })
-  
   output$socialBar <- renderPlot({
     df_sbrange <- df() %>% mutate(ranges = cut(socialBehavior, c(0, 9, 12, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
@@ -288,7 +329,6 @@ server <- function(input, output, session) {
                         names.arg=c("High Risk", "Some Risk", "Low Risk")
     )
   })
-  
   output$academicBar <- renderPlot({
     df_abrange <- df() %>% mutate(ranges = cut(academicBehavior, c(0, 6, 9, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
@@ -299,7 +339,6 @@ server <- function(input, output, session) {
                         names.arg=c("High Risk", "Some Risk", "Low Risk")
     )
   })
-  
   output$emotionalBar <- renderPlot({
     df_ebrange <- df() %>% mutate(ranges = cut(emotionalBehavior, c(0, 7, 10, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
@@ -328,31 +367,50 @@ server <- function(input, output, session) {
     tmp <- df()
   })
   
+  #School-wide TRS Scores as reactive functions.
+  low_total_TRS <- reactive({
+    tmp <- df()
+    tmp[tmp$TRStotalBehavior > lowRiskMin,]
+  })
+  some_total_TRS <- reactive({
+    tmp <- df()
+    tmp[tmp$TRStotalBehavior > someRiskMin & tmp$TRStotalBehavior < lowRiskMin,]
+  })
+  high_total_TRS <- reactive({
+    tmp <- df()
+    tmp[tmp$TRStotalBehavior < someRiskMin,]
+  })
+  all_total_TRS <- reactive({
+    tmp <- df()
+  })
+  
+  #Selectable dataframe display of CSV contents
   output$contentsTable <- renderTable({
     options = list(scrollX = TRUE)
     # if a specific grade is selected, subset the list with that grade as a conditional.
     if(input$grade != "allgrades"){
       switch(input$level,
              # Depending on radiobutton selected, the returned table reflects one risk group.
-             "lowtotal" = return(low_total_MS()[low_total_MS()$grade == input$grade,]),
-             "sometotal" = return(some_total_MS()[some_total_MS()$grade == input$grade,]),
-             "hightotal" = return(high_total_MS()[high_total_MS()$grade == input$grade,]),
-             "alltotal" = return(all_total_MS()[all_total_MS()$grade == input$grade,])
+             "lowtotalms" = return(low_total_MS()[low_total_MS()$grade == input$grade,]),
+             "sometotalms" = return(some_total_MS()[some_total_MS()$grade == input$grade,]),
+             "hightotalms" = return(high_total_MS()[high_total_MS()$grade == input$grade,]),
+             "alltotalms" = return(all_total_MS()[all_total_MS()$grade == input$grade,])
              )
     }
     # if all grades are selected, simply return MS without conditional
     else{
       switch(input$level,
              # Depending on radiobutton selected, the returned table reflects one risk group.
-             "lowtotal" = return(low_total_MS()),
-             "sometotal" = return(some_total_MS()),
-             "hightotal" = return(high_total_MS()),
-             "alltotal" = return(all_total_MS())
+             "lowtotalms" = return(low_total_MS()),
+             "sometotalms" = return(some_total_MS()),
+             "hightotalms" = return(high_total_MS()),
+             "alltotalms" = return(all_total_MS())
       )
     }
       
   })
   
+  #Student MySAEBERS and TRS bargraph outputs
   output$saeberstudentBar <- renderPlot({
     #ensure the user has uploaded data and selected a student before attempting a plot render
     validate(need(!is.null(selectedStudent$data), ''))
@@ -370,12 +428,11 @@ server <- function(input, output, session) {
                         scale_x_discrete(labels=c("Total", "Emotional", "Academic", "Social"))
     return(studenttotalplot)
   })
-  
   output$trsstudentBar <- renderPlot({
     #ensure the user has uploaded data and selected a student before attempting a plot render
     validate(need(!is.null(selectedStudent$data), ''))
     #establish categories for plotting, then subset the selected student data with these categories.
-    vars <- c("TSRtotalBehavior", "TSRemotionalBehavior", "TSRacademicBehavior", "TSRsocialBehavior")
+    vars <- c("TRStotalBehavior", "TRSemotionalBehavior", "TRSacademicBehavior", "TRSsocialBehavior")
     trsstats <-  selectedStudent$data[vars]
     #convert df to long df with category and corresponding score as our columns.
     long_df <- trsstats %>% gather(Category, Score)
