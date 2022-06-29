@@ -1,11 +1,12 @@
 library(shiny) #library for running Shiny Webapp
-library(reshape2)
+library(reshape2) #library for dataframe and matrix operations
+library(stringi) #library for string operations
 library(shinyjs) #library for js functions
 library(shinydashboard) #dashboarding library
 library(readxl) #library for taking in XLS/XLSX
 library(ggplot2) #library for basic plots
 library(tidyverse) #megapackage for analysis/operations
-library(readr) #library for taking in 
+library(readr) #library for taking in CSV
 
 # Loading in CSV and creating autocomplete list -----
 studentData <- read.csv("data/dummy_midas_data2.csv") #attempting to remove this line.
@@ -153,7 +154,8 @@ faqTab <- tabItem(tabName = "faqTab",
                   column(
                     12,
                     div(style = "background-color: #d0df92; padding: 5px; border-radius: 25px; height: 100%;",
-                        p("FAQ:"))
+                        p("FAQ:"),
+                        uiOutput("faqtext"))
                   ))
 # interpretTab =====
 interpretTab <- tabItem(tabName = "interpretTab",
@@ -175,9 +177,9 @@ ui <- dashboardPage(
     sidebarMenu(id = "tabs", 
                 menuItem("Upload Data", tabName = "Upload", icon = icon("upload")),
                 menuItem("School", tabName = "Dashboard", icon = icon("school")),
-                menuItem("Class", tabName = "classTab", icon = icon("users")),
+                #menuItem("Class", tabName = "classTab", icon = icon("users")),
                 menuItem("Student", tabName = "studentTab", icon = icon("user-graduate")),
-                menuItem("Archive", tabName = "archiveTab", icon = icon("archive")),
+                #menuItem("Archive", tabName = "archiveTab", icon = icon("archive")),
                 menuItem("Frequently Asked Questions", tabName = "faqTab", icon = icon("question-circle")),
                 menuItem("How To Interpret This Data", tabName = "interpretTab", icon = icon("info"))
     )
@@ -195,9 +197,9 @@ ui <- dashboardPage(
         #Student - Displaying student data
         studentTab,
         #Class - Displaying class data
-        classTab,
+        #classTab,
         #Archive - under construction?
-        archiveTab,
+        #archiveTab,
         #FAQ - Frequently Asked Questions (to be filled out by College of Ed.)
         faqTab,
         #Intepret - How the data is interpreted (to contain videos by CoE)
@@ -246,6 +248,14 @@ server <- function(input, output, session) {
     last(strsplit(input$txtinStudentName, ",")[[1]][1])
     first(str_trim(strsplit(input$txtinStudentName, ",")[[1]][2]))
     selectedStudent$data <- subset(df(), lastName == last() & firstName == first())
+  })
+  
+  output$faqtext <- renderUI({
+    filename <- normalizePath(file.path('data', paste('faq', '.txt', sep='')))
+    fileText <- readLines(filename)
+    splitText <- stringi::stri_split(str = fileText, regex = '\\n')
+    replacedText <- lapply(splitText, p)
+    replacedText
   })
   
   #Student Demographic Characteristics as text output.
