@@ -18,14 +18,19 @@ autocomplete_list <- paste0(studentData$lastName, ",", studentData$firstName)
 schoolTab <- tabItem(tabName = "Dashboard",
                      actionButton("Warning", "Click Here To Upload School Files in Upload Files"),
                      # 4-4 split bars, 
-                     fluidRow(splitLayout(plotOutput("totalBar"),
-                                          plotOutput("socialBar"))
+                     fluidRow(splitLayout(plotOutput("trstotalBar"),
+                                          plotOutput("totalBar"))
                               ),
-                     fluidRow(splitLayout(plotOutput("academicBar"),
-                                          plotOutput("emotionalBar"))
+                     fluidRow(splitLayout(splitLayout(plotOutput("trssocialBar"),
+                                                      plotOutput("trsacademicBar"),
+                                                      plotOutput("trsemotionalBar")),
+                                          splitLayout(plotOutput("socialBar"),
+                                                      plotOutput("academicBar"),
+                                                      plotOutput("emotionalBar"))
+                                          )
                               ),
                      fluidRow(splitLayout(cellwidths = c("50%", "50%"),
-                                          radioButtons("level", "Show ___ mySAEBERS Risk Levels",
+                                          radioButtons("level", "Show ___ MySAEBRS Risk Levels",
                                                       c("All" = "alltotalms",
                                                         "Low" = "lowtotalms",
                                                         "Some" = "sometotalms",
@@ -122,7 +127,7 @@ studentTab <- tabItem(tabName = "studentTab",
                                   plotOutput("trsstudentBar"))
                                   )
                               
-                              #plotOutput for the student's MIDAS Data, both TRS and mySAEBERS
+                              #plotOutput for the student's MIDAS Data, both TRS and MySAEBRS
                             )
                         )
                       )
@@ -268,89 +273,107 @@ server <- function(input, output, session) {
   
   #School-wide TRS bargraph outputs
   output$trstotalBar <- renderPlot({
-    df_tbrange <- df() %>% mutate(ranges = cut(TRStotalBehavior, c(0, 24, 37, Inf))) %>%
+    df_tbrange <- df() %>% mutate(ranges = cut(TRStotalBehavior, c(-1, 24, 37, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
-    df_tbrange
-    totalbar <- barplot(df_tbrange$n, main = "Total Behavior (TRS)", 
-                        xlab="Percentage of School",
-                        col= c("red", "yellow", "green"),
-                        names.arg=c("High Risk", "Some Risk", "Low Risk")
-    )
+    studenttotalplot <- ggplot(df_tbrange, aes(x = ranges, y = n)) +
+      geom_bar(stat = 'identity', aes(fill=ranges)) +
+      geom_text(aes(label=n),position=position_dodge(width=0.9),vjust=-0.25) +
+      theme(legend.position = "none") + 
+      ggtitle("TRS Total Score Distribution") + 
+      xlab("Risk Levels") + ylab("Number of Students") + 
+      scale_x_discrete(labels=c("High Risk", "Some Risk", "Low Risk"))
+    return(studenttotalplot)
   })
   output$trssocialBar <- renderPlot({
-    df_sbrange <- df() %>% mutate(ranges = cut(TRSsocialBehavior, c(0, 9, 12, Inf))) %>%
+    df_sbrange <- df() %>% mutate(ranges = cut(TRSsocialBehavior, c(-1, 9, 12, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
-    df_sbrange
-    totalbar <- barplot(df_sbrange$n, main = "Social Behavior (TRS)", 
-                        xlab="Percentage of School",
-                        col=c("red", "yellow", "green"),
-                        names.arg=c("High Risk", "Some Risk", "Low Risk")
-    )
+    studenttotalplot <- ggplot(df_sbrange, aes(x = ranges, y = n)) +
+      geom_bar(stat = 'identity', aes(fill=ranges)) +
+      geom_text(aes(label=n),position=position_dodge(width=0.9),vjust=-0.25) +
+      theme(legend.position = "none") + 
+      ggtitle("TRS Social Score Distribution") + 
+      xlab("Risk Levels") + ylab("Number of Students") + 
+      scale_x_discrete(labels=c("High Risk", "Some Risk", "Low Risk"))
+    return(studenttotalplot)
   })
   output$trsacademicBar <- renderPlot({
-    df_abrange <- df() %>% mutate(ranges = cut(TRSacademicBehavior, c(0, 6, 9, Inf))) %>%
+    df_abrange <- df() %>% mutate(ranges = cut(TRSacademicBehavior, c(-1, 6, 9, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
-    df_abrange
-    totalbar <- barplot(df_abrange$n, main = "Academic Behavior (TRS)", 
-                        xlab="Percentage of School",
-                        col= c("red", "yellow", "green"),
-                        names.arg=c("High Risk", "Some Risk", "Low Risk")
-    )
+    studenttotalplot <- ggplot(df_abrange, aes(x = ranges, y = n)) +
+      geom_bar(stat = 'identity', aes(fill=ranges)) +
+      geom_text(aes(label=n),position=position_dodge(width=0.9),vjust=-0.25) +
+      theme(legend.position = "none") + 
+      ggtitle("TRS Academic Score Distribution") + 
+      xlab("Risk Levels") + ylab("Number of Students") + 
+      scale_x_discrete(labels=c("High Risk", "Some Risk", "Low Risk"))
+    return(studenttotalplot)
   })
   output$trsemotionalBar <- renderPlot({
-    df_ebrange <- df() %>% mutate(ranges = cut(TRSemotionalBehavior, c(0, 7, 10, Inf))) %>%
+    df_ebrange <- df() %>% mutate(ranges = cut(TRSemotionalBehavior, c(-1, 7, 10, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
-    df_ebrange
-    totalbar <- barplot(df_ebrange$n, main = "Emotional Behavior (TRS)", 
-                        xlab="Percentage of School",
-                        col= c("red", "yellow", "green"),
-                        names.arg=c("High Risk", "Some Risk", "Low Risk")
-    )
+    studenttotalplot <- ggplot(df_ebrange, aes(x = ranges, y = n)) +
+      geom_bar(stat = 'identity', aes(fill=ranges)) +
+      geom_text(aes(label=n),position=position_dodge(width=0.9),vjust=-0.25) +
+      theme(legend.position = "none") + 
+      ggtitle("TRS Emotional Score Distribution") + 
+      xlab("Risk Levels") + ylab("Number of Students") + 
+      scale_x_discrete(labels=c("High Risk", "Some Risk", "Low Risk"))
+    return(studenttotalplot)
   })
   
-  #School-wide MySAEBERS bargraph outputs
+  #School-wide MySAEBRS bargraph outputs
   output$totalBar <- renderPlot({
-    df_tbrange <- df() %>% mutate(ranges = cut(totalBehavior, c(0, 24, 37, Inf))) %>%
+    df_tbrange <- df() %>% mutate(ranges = cut(totalBehavior, c(-1, 24, 37, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
-    df_tbrange
-    totalbar <- barplot(df_tbrange$n, main = "Total Behavior Distribution", 
-                        xlab="Percentage of School",
-                        col= c("red", "yellow", "green"),
-                        names.arg=c("High Risk", "Some Risk", "Low Risk")
-    )
+    studenttotalplot <- ggplot(df_tbrange, aes(x = ranges, y = n)) +
+      geom_bar(stat = 'identity', aes(fill=ranges)) +
+      geom_text(aes(label=n),position=position_dodge(width=0.9),vjust=-0.25) +
+      theme(legend.position = "none") + 
+      ggtitle("MySAEBRS Total Score Distribution") + 
+      xlab("Risk Levels") + ylab("Number of Students") + 
+      scale_x_discrete(labels=c("High Risk", "Some Risk", "Low Risk"))
+    return(studenttotalplot)
   })
   output$socialBar <- renderPlot({
-    df_sbrange <- df() %>% mutate(ranges = cut(socialBehavior, c(0, 9, 12, Inf))) %>%
+    df_sbrange <- df() %>% mutate(ranges = cut(socialBehavior, c(-1, 9, 12, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
-    df_sbrange
-    totalbar <- barplot(df_sbrange$n, main = "Social Behavior Distribution", 
-                        xlab="Percentage of School",
-                        col=c("red", "yellow", "green"),
-                        names.arg=c("High Risk", "Some Risk", "Low Risk")
-    )
+    studenttotalplot <- ggplot(df_sbrange, aes(x = ranges, y = n)) +
+      geom_bar(stat = 'identity', aes(fill=ranges)) +
+      geom_text(aes(label=n),position=position_dodge(width=0.9),vjust=-0.25) +
+      theme(legend.position = "none") + 
+      ggtitle("MySAEBRS Social Score Distribution") + 
+      xlab("Risk Levels") + ylab("Number of Students") + 
+      scale_x_discrete(labels=c("High Risk", "Some Risk", "Low Risk"))
+    return(studenttotalplot)
   })
   output$academicBar <- renderPlot({
-    df_abrange <- df() %>% mutate(ranges = cut(academicBehavior, c(0, 6, 9, Inf))) %>%
+    df_abrange <- df() %>% mutate(ranges = cut(academicBehavior, c(-1, 6, 9, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
     df_abrange
-    totalbar <- barplot(df_abrange$n, main = "Academic Behavior Distribution", 
-                        xlab="Percentage of School",
-                        col= c("red", "yellow", "green"),
-                        names.arg=c("High Risk", "Some Risk", "Low Risk")
-    )
+    studenttotalplot <- ggplot(df_abrange, aes(x = ranges, y = n)) +
+      geom_bar(stat = 'identity', aes(fill=ranges)) +
+      geom_text(aes(label=n),position=position_dodge(width=0.9),vjust=-0.25) +
+      theme(legend.position = "none") + 
+      ggtitle("MySAEBRS Academic Score Distribution") + 
+      xlab("Risk Levels") + ylab("Number of Students") + 
+      scale_x_discrete(labels=c("High Risk", "Some Risk", "Low Risk"))
+    return(studenttotalplot)
   })
   output$emotionalBar <- renderPlot({
-    df_ebrange <- df() %>% mutate(ranges = cut(emotionalBehavior, c(0, 7, 10, Inf))) %>%
+    df_ebrange <- df() %>% mutate(ranges = cut(emotionalBehavior, c(-1, 7, 10, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
     df_ebrange
-    totalbar <- barplot(df_ebrange$n, main = "Emotional Behavior Distribution", 
-                        xlab="Percentage of School",
-                        col= c("red", "yellow", "green"),
-                        names.arg=c("High Risk", "Some Risk", "Low Risk")
-    )
+    studenttotalplot <- ggplot(df_ebrange, aes(x = ranges, y = n)) +
+      geom_bar(stat = 'identity', aes(fill=ranges)) +
+      geom_text(aes(label=n),position=position_dodge(width=0.9),vjust=-0.25) +
+      theme(legend.position = "none") + 
+      ggtitle("MySAEBRS Emotional Score Distribution") + 
+      xlab("Risk Levels") + ylab("Number of Students") + 
+      scale_x_discrete(labels=c("High Risk", "Some Risk", "Low Risk"))
+    return(studenttotalplot)
   })
   
-  #School-wide MySAEBERS Scores as reactive functions. 
+  #School-wide MySAEBRS Scores as reactive functions. 
   low_total_MS <- reactive({
     tmp <- df()
     tmp[tmp$totalBehavior > lowRiskMin,]
@@ -410,15 +433,15 @@ server <- function(input, output, session) {
       
   })
   
-  #Student MySAEBERS and TRS bargraph outputs
+  #Student MySAEBRS and TRS bargraph outputs
   output$saeberstudentBar <- renderPlot({
     #ensure the user has uploaded data and selected a student before attempting a plot render
     validate(need(!is.null(selectedStudent$data), ''))
     #establish categories for plotting, then subset the selected student data with these categories.
     vars <- c("totalBehavior", "emotionalBehavior", "academicBehavior", "socialBehavior")
-    mysaeberstats <- selectedStudent$data[vars]
+    MySAEBRSstats <- selectedStudent$data[vars]
     #convert df to long df with category and corresponding score as our columns.
-    long_df <- mysaeberstats %>% gather(Category, Score)
+    long_df <- MySAEBRSstats %>% gather(Category, Score)
     #create ggplot with data, coloring, adjusting axis data and data presentation.
     studenttotalplot <- ggplot(long_df, aes(x = Category, y = Score)) +
                         geom_bar(stat = 'identity', aes(fill=Category)) +
