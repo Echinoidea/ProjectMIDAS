@@ -8,10 +8,10 @@ library(tidyverse) #megapackage for analysis/operations
 library(readr) #library for taking in 
 
 # Loading in CSV and creating autocomplete list -----
-studentData <- read.csv("data/dummy_midas_data2.csv")
-rStudentData <- reactiveValues(data = studentData)
+studentData <- read.csv("data/dummy_midas_data2.csv") #attempting to remove this line.
 selectedStudent <- reactiveValues(data = NULL)
 autocomplete_list <- paste0(studentData$lastName, ",", studentData$firstName)
+#rStudentData <- reactiveValues(data = studentData)
 
 # *Tab definitions* -----
 # schoolTab =====
@@ -31,10 +31,11 @@ schoolTab <- tabItem(tabName = "Dashboard",
                                                         "Some" = "sometotal",
                                                         "High" = "hightotal")),
                                           #To-Do: Grade Level Selection(6,7,8 grade)
-                                         radioButtons("specialed", "Show",
-                                                      c("All Students" = "high",
-                                                        "No Special Education" = "nspecialed",
-                                                        "Only Special Education" = "yspecialed"))
+                                         radioButtons("grade", "Show",
+                                                      c("All Grades" = "allgrades",
+                                                        "6th Grade" = "6",
+                                                        "7th Grade" = "7",
+                                                        "8th Grade" = "8"))
                                          )
                               ),
                      div(style='height:100%; width:100%; overflow: scroll; background-color: #dce0b4',
@@ -58,68 +59,74 @@ uploadTab <- tabItem(tabName = "Upload",
 )
 # studentTab =====
 studentTab <- tabItem(tabName = "studentTab",
+                      fluidRow( 
+                        splitLayout(
                       # This column contains: student image, name, age, gender, ethnicity, grade, and special ed status
-                      fluidRow(
-                        column(
-                          4,
-                          style = "background-color: #d0df92; padding: 5px; border-radius: 25px;",
-                          align = "center",
-                          
-                          # Center and size for image
-                          tags$head(tags$style(
-                            type = "text/css",
-                            "#studentImage img {max-width: 100%; width: 100%, height: auto;}"
-                          )),
-                          
-                          # Image
-                          div(style = "height: 100px; width: 100px;", 
-                              imageOutput("studentImage")),
-                          br(), br(),
-                          
-                          # Name search (changed to autocomplete to avoid crashes)
-                          selectizeInput(
-                            "txtinStudentName",
-                            label = "Student Name (Last, First)",
-                            choices = c("", autocomplete_list),
-                            selected = '',
-                            multiple = FALSE,
-                            options = list(create = FALSE)
-                          ),
-                          actionButton("btnStudentName", label = "Search"),
-                          br(), br(),
-                          
-                          # Student demographic data
                           fluidRow(
                             column(
-                              12,
+                              4,
+                              style = "background-color: #d0df92; padding: 5px; border-radius: 25px;",
                               align = "center",
                               
-                              p(tags$b("Gender")),
-                              textOutput("studentGender"),
-                              br(),
+                              # Center and size for image
+                              tags$head(tags$style(
+                                type = "text/css",
+                                "#studentImage img {max-width: 100%; width: 100%, height: auto;}"
+                              )),
                               
-                              p(tags$b("Ethnicity")),
-                              textOutput("studentEthnicity"),
-                              br(),
+                              # Image
+                              div(style = "height: 100px; width: 100px;", 
+                                  imageOutput("studentImage")),
+                              br(), br(),
                               
-                              p(tags$b("Grade")),
-                              textOutput("studentGrade"),
-                              br(),
-                              
-                              p(tags$b("Special Education")),
-                              textOutput("studentSpecialEd")
-                            )
-                          )
-                        ),
-                        #MIDAS Assessments
-                        column(
-                          8,
-                          div(style = "background-color: #d0df92; padding: 5px; border-radius: 25px; height: 90%;")
+                              # Name search (changed to autocomplete to avoid crashes)
+                              selectizeInput(
+                                "txtinStudentName",
+                                label = "Student Name (Last, First)",
+                                choices = c("", autocomplete_list),
+                                selected = '',
+                                multiple = FALSE,
+                                options = list(create = FALSE)
                               ),
-                          plotOutput("studenttotalBar")
-                          #plotOutput for the student's MIDAS Data, both TRS and mySAEBERS
+                              actionButton("btnStudentName", label = "Search"),
+                              br(), br(),
+                              
+                              # Student demographic data
+                              fluidRow(
+                                column(
+                                  12,
+                                  align = "center",
+                                  
+                                  p(tags$b("Gender")),
+                                  textOutput("studentGender"),
+                                  br(),
+                                  
+                                  p(tags$b("Ethnicity")),
+                                  textOutput("studentEthnicity"),
+                                  br(),
+                                  
+                                  p(tags$b("Grade")),
+                                  textOutput("studentGrade"),
+                                  br(),
+                                  
+                                  p(tags$b("Special Education")),
+                                  textOutput("studentSpecialEd")
+                                )
+                              )
+                            ),
+                            #MIDAS Assessments
+                            column(
+                              8,
+                              div(style = "background-color: #d0df92; padding: 15px; border-radius: 25px;",
+                                  plotOutput("saeberstudentBar"),
+                                  plotOutput("trsstudentBar"))
+                                  )
+                              
+                              #plotOutput for the student's MIDAS Data, both TRS and mySAEBERS
+                            )
                         )
-)
+                      )
+    )
 
 # classTab =====
 classTab <- tabItem(tabName = "classTab",
@@ -323,16 +330,63 @@ server <- function(input, output, session) {
   
   output$contentsTable <- renderTable({
     options = list(scrollX = TRUE)
-    # This switch is used for demo purposes, needs to be changed for our dashboarding needs
-    switch(input$level,
-           # Depending on radiobutton selected, the returned table reflects one risk group.
-           "lowtotal" = return(low_total_MS()),
-           "sometotal" = return(some_total_MS()),
-           "hightotal" = return(high_total_MS()),
-           "alltotal" = return(all_total_MS()))
+    # if a specific grade is selected, subset the list with that grade as a conditional.
+    if(input$grade != "allgrades"){
+      switch(input$level,
+             # Depending on radiobutton selected, the returned table reflects one risk group.
+             "lowtotal" = return(low_total_MS()[low_total_MS()$grade == input$grade,]),
+             "sometotal" = return(some_total_MS()[some_total_MS()$grade == input$grade,]),
+             "hightotal" = return(high_total_MS()[high_total_MS()$grade == input$grade,]),
+             "alltotal" = return(all_total_MS()[all_total_MS()$grade == input$grade,])
+             )
+    }
+    # if all grades are selected, simply return MS without conditional
+    else{
+      switch(input$level,
+             # Depending on radiobutton selected, the returned table reflects one risk group.
+             "lowtotal" = return(low_total_MS()),
+             "sometotal" = return(some_total_MS()),
+             "hightotal" = return(high_total_MS()),
+             "alltotal" = return(all_total_MS())
+      )
+    }
+      
   })
   
-  output$studenttotalBar <- renderPlot({
+  output$saeberstudentBar <- renderPlot({
+    #ensure the user has uploaded data and selected a student before attempting a plot render
+    validate(need(!is.null(selectedStudent$data), ''))
+    #establish categories for plotting, then subset the selected student data with these categories.
+    vars <- c("totalBehavior", "emotionalBehavior", "academicBehavior", "socialBehavior")
+    mysaeberstats <- selectedStudent$data[vars]
+    #convert df to long df with category and corresponding score as our columns.
+    long_df <- mysaeberstats %>% gather(Category, Score)
+    #create ggplot with data, coloring, adjusting axis data and data presentation.
+    studenttotalplot <- ggplot(long_df, aes(x = Category, y = Score)) +
+                        geom_bar(stat = 'identity', aes(fill=Category)) +
+                        geom_text(aes(label=Score),position=position_dodge(width=0.9),vjust=-0.25) +
+                        theme(legend.position = "none") + 
+                        ggtitle("mySAEBER Scores") + 
+                        scale_x_discrete(labels=c("Total", "Emotional", "Academic", "Social"))
+    return(studenttotalplot)
+  })
+  
+  output$trsstudentBar <- renderPlot({
+    #ensure the user has uploaded data and selected a student before attempting a plot render
+    validate(need(!is.null(selectedStudent$data), ''))
+    #establish categories for plotting, then subset the selected student data with these categories.
+    vars <- c("TSRtotalBehavior", "TSRemotionalBehavior", "TSRacademicBehavior", "TSRsocialBehavior")
+    trsstats <-  selectedStudent$data[vars]
+    #convert df to long df with category and corresponding score as our columns.
+    long_df <- trsstats %>% gather(Category, Score)
+    #create ggplot with data, coloring, adjusting axis data and data presentation.
+    studenttotalplot <- ggplot(long_df, aes(x = Category, y = Score)) +
+                        geom_bar(stat = 'identity', aes(fill=Category)) +
+                        geom_text(aes(label=Score),position=position_dodge(width=0.9),vjust=-0.25) +
+                        theme(legend.position = "none", axis.title.x = element_blank()) + 
+                        ggtitle("TRS Scores") + 
+                        scale_x_discrete(labels=c("Total", "Emotional", "Academic", "Social"))
+    return(studenttotalplot)
   })
 }
 
