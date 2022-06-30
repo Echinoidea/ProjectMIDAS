@@ -1,52 +1,25 @@
+#
+# This is a Shiny web application. You can run the application by clicking
+# the 'Run App' button above.
+#
+# Find out more about building applications with Shiny here:
+#
+#    http://shiny.rstudio.com/
+#
+
 library(shiny) #library for running Shiny Webapp
-library(reshape2) #library for dataframe and matrix operations
-library(stringi) #library for string operations
 library(shinyjs) #library for js functions
 library(shinydashboard) #dashboarding library
 library(readxl) #library for taking in XLS/XLSX
 library(ggplot2) #library for basic plots
 library(tidyverse) #megapackage for analysis/operations
-library(readr) #library for taking in CSV
+library(readr) #library for taking in 
+#library(shinyWidgets)
+options(spinner.color="white")
 
-# Loading in CSV and creating autocomplete list -----
-#studentData <- read.csv("data/dummy_midas_data2.csv") #attempting to remove this line.
+#load data from .csv file 
 selectedStudent <- reactiveValues(data = NULL)
-#autocomplete_list <- paste0(studentData$lastName, ",", studentData$firstName)
-#rStudentData <- reactiveValues(data = studentData)
 
-# *Tab definitions* -----
-# schoolTab =====
-schoolTab <- tabItem(tabName = "Dashboard",
-                     actionButton("Warning", "Click Here To Upload School Files in Upload Files"),
-                     # 4-4 split bars, 
-                     fluidRow(splitLayout(plotOutput("trstotalBar"),
-                                          plotOutput("totalBar"))
-                              ),
-                     fluidRow(splitLayout(splitLayout(plotOutput("trssocialBar"),
-                                                      plotOutput("trsacademicBar"),
-                                                      plotOutput("trsemotionalBar")),
-                                          splitLayout(plotOutput("socialBar"),
-                                                      plotOutput("academicBar"),
-                                                      plotOutput("emotionalBar"))
-                                          )
-                              ),
-                     fluidRow(splitLayout(cellwidths = c("50%", "50%"),
-                                          radioButtons("level", "Show ___ MySAEBRS Risk Levels",
-                                                      c("All" = "alltotalms",
-                                                        "Low" = "lowtotalms",
-                                                        "Some" = "sometotalms",
-                                                        "High" = "hightotalms")),
-                                          #To-Do: Grade Level Selection(6,7,8 grade)
-                                         radioButtons("grade", "Show",
-                                                      c("All Grades" = "allgrades",
-                                                        "6th Grade" = "6",
-                                                        "7th Grade" = "7",
-                                                        "8th Grade" = "8"))
-                                         )
-                              ),
-                     div(style='height:100%; width:100%; overflow: scroll; background-color: #dce0b4',
-                         tableOutput("contentsTable"))
-)
 # uploadTab =====
 uploadTab <- tabItem(tabName = "Upload",
                      fluidRow(
@@ -63,161 +36,301 @@ uploadTab <- tabItem(tabName = "Upload",
                      )
                      #end of fluidRow
 )
-# studentTab =====
-studentTab <- tabItem(tabName = "studentTab",
-                      actionButton("WarningStudent", "Click Here To Upload School Files in Upload Files",), 
-                      fluidRow( 
-                        splitLayout(
-                      # This column contains: student image, name, age, gender, ethnicity, grade, and special ed status
-                          fluidRow(
-                            column(
-                              4,
-                              style = "background-color: #d0df92; padding: 5px; border-radius: 25px;",
-                              align = "center",
-                              
-                              # Center and size for image
-                              tags$head(tags$style(
-                                type = "text/css",
-                                "#studentImage img {max-width: 100%; width: 100%, height: auto;}"
-                              )),
-                              
-                              # Image
-                              div(style = "height: 100px; width: 100px;", 
-                                  imageOutput("studentImage")),
-                              br(), br(),
-                              
-                              # Name search (changed to autocomplete to avoid crashes)
-                              textInput(
-                                "txtinStudentName",
-                                label = "Student ID",
-                                placeholder = "   s###"
-                              ),
-                              actionButton("btnStudentName", label = "Search"),
-                              br(), br(),
-                              
-                              # Student demographic data
-                              fluidRow(
-                                column(
-                                  12,
-                                  align = "center",
-                                  
-                                  p(tags$b("First Name")),
-                                  textOutput("studentFirstName"),
-                                  br(),
-                                  
-                                  p(tags$b("Last Name")),
-                                  textOutput("studentLastName"),
-                                  br(),
-                                  
-                                  p(tags$b("Gender")),
-                                  textOutput("studentGender"),
-                                  br(),
-                                  
-                                  p(tags$b("Ethnicity")),
-                                  textOutput("studentEthnicity"),
-                                  br(),
-                                  
-                                  p(tags$b("Grade")),
-                                  textOutput("studentGrade"),
-                                  br(),
-                                  
-                                  p(tags$b("Special Education")),
-                                  textOutput("studentSpecialEd")
-                                )
-                              )
-                            ),
-                            #MIDAS Assessments
-                            column(
-                              8,
-                              div(style = "background-color: #d0df92; padding: 15px; border-radius: 25px;",
-                                  plotOutput("saeberstudentBar"),
-                                  plotOutput("trsstudentBar"))
-                                  )
-                              
-                              #plotOutput for the student's MIDAS Data, both TRS and MySAEBRS
-                            )
-                        )
-                      )
-    )
 
-# classTab =====
-classTab <- tabItem(tabName = "classTab",
-                    column(
-                      12,
-                      div(style = "background-color: #d0df92; padding: 5px; border-radius: 25px; height: 5%;",
-                          p("Class Information To Go Here (Data by Class)"),
-                          br(),
-                          p("This should look similar to School View, but allow selections by teacher/class"))
-                    ))
-# archiveTab =====
-archiveTab <- tabItem(tabName = "archiveTab",
-                      column(
-                        12,
-                        div(style = "background-color: #d0df92; padding: 5px; border-radius: 25px; height: 100%;")
-                      ))
-# faqTab =====
+studentTab <- tabItem(tabName = "studentTab",
+# This column contains: student image, name, age, gender, ethnicity, grade, and special ed status
+  fluidRow(
+    #white padding
+    column(
+      12,
+      style = "background-color:white; padding: 15px; border-radius: 25px; height: 100%; ",
+      
+      column(
+        4,
+        style = "background-color: #d0df92; padding: 100px; border-radius: 25px; height: 100%; ",
+        align = "center",
+        # Center and size for image
+        tags$head(
+          tags$style(
+            type = "text/css",
+            "#studentImage img {max-width: 100%; width: 100%, height: auto;}"
+            )
+          ),
+        # Image
+        div(style = "height: 100px; width: 100px;", 
+          imageOutput("studentImage")),
+          br(), 
+          br(),
+                              
+        # Name search (changed to autocomplete to avoid crashes)
+        textInput(
+          "txtinStudentName",
+          label = "Student ID",
+          placeholder = "   s###"
+        ),
+        actionButton("btnStudentName", label = "Search"),
+        br(), br(),
+          
+      
+          # Student demographic data
+            fluidRow(
+              column(
+                12,
+                align = "center",
+                p(tags$b("First Name")),
+                textOutput("studentFirstName"),
+                br(),
+                
+                p(tags$b("Last Name")),
+                textOutput("studentLastName"),
+                br(),
+                p(tags$b("Gender")),
+                textOutput("studentGender"),
+                br(),
+                                    
+                p(tags$b("Ethnicity")),
+                textOutput("studentEthnicity"),
+                br(),
+                
+                p(tags$b("Grade")),
+                textOutput("studentGrade"),
+                br(),
+                                  
+                p(tags$b("Special Education")),
+                textOutput("studentSpecialEd")
+              ),
+            
+            )
+          ),
+      column(1),
+        #MIDAS Assessments
+        column(
+          7,
+          style = "background-color:#d0df92; padding: 15px; border-radius: 25px; height: 100%; ",
+          
+          verticalLayout(
+            column(
+              12,
+              
+              column(2,
+                     p(tags$b("Test Score"))),
+              column(5,style = "background-color:white; padding: 20px; border-radius: 25px; height: 100%; border-style: solid;",
+                     align = "center")
+              
+              
+            ),
+            
+            
+            br(),
+            p(tags$b("SAEBRS-TRS")),
+            column(
+              4,
+              style = "background-color:white; padding: 20px; border-radius: 25px; width:100%; height: 100%; border-style: solid;",
+              align = "center",
+              splitLayout
+              (
+                column(
+                  4,
+                  p(tags$b("Total TRS")),
+                  textOutput("TotalTRS"),
+                  br(),
+                  p(tags$b("Social TRS")),
+                  textOutput("SocialTRS"),
+                  br(),
+                  p(tags$b("Social TRS")),
+                  textOutput("AcademicTRS"),
+                  br(),
+                  p(tags$b("Social TRS")),
+                  textOutput("EmotionalTRS")
+                ),
+                plotOutput("trstotalBar")
+              )
+            ),
+            br(),
+            p(tags$b("mySAEBRS")),
+            column(
+              4,
+              style = "background-color:white; padding: 20px; border-radius: 25px;width:100%; height: 100%; border-style: solid;",
+              align = "center",
+              splitLayout
+              (
+                column(
+                  4,
+                  p(tags$b("Total")),
+                  textOutput("TotalSAEBRS"),
+                  br(),
+                  p(tags$b("Social")),
+                  textOutput("SocialSAEBRS"),
+                  br(),
+                  p(tags$b("Social")),
+                  textOutput("AcademicSAEBRS"),
+                  br(),
+                  p(tags$b("Social")),
+                  textOutput("EmotionalSAEBRS")
+                ),
+                plotOutput("totalBar")
+              )
+            ),fluid = TRUE
+          )
+        )
+    )
+  )
+)
+
+# schoolTab =====
+schoolTab <- tabItem(tabName = "schoolTab",
+                     actionButton("Warning", "Click Here To Upload School Files in Upload Files"),
+                     # 4-4 split bars, 
+  column(
+    12,
+    style = "background-color:white; padding: 15px; border-radius: 25px; height: 100%; ",
+    verticalLayout(
+      p(tags$b("SAEBRS-TRS")),
+      column(
+        12,
+        style = "background-color: #d0df92; padding: 5px; border-radius: 25px; wight:100% height: 90%;",
+        fluidRow(
+          splitLayout(
+            splitLayout(
+              plotOutput("trssocialBar"),
+              plotOutput("trsacademicBar"),
+              plotOutput("trsemotionalBar")
+              )))
+      ),
+      br(),
+      p(tags$b("mySAEBRS")),
+      column(
+        12,
+        style = "background-color: #d0df92; padding: 5px; border-radius: 25px; height: 90%;",
+        
+        ),
+      br(),
+      br()
+    )
+  )
+)
+ 
 faqTab <- tabItem(tabName = "faqTab",
+                  fluidRow(
                   column(
                     12,
-                    div(style = "background-color: #d0df92; padding: 5px; border-radius: 25px; height: 100%;",
+                    style = "background-color: #white; padding: 5px; border-radius: 25px; height: 100%;",
+                    column(
+                      12,
+                      style = "background-color: #white; padding: 5px; border-radius: 25px; height: 100%;",
                         p("FAQ:"),
-                        uiOutput("faqtext"))
-                  ))
-# interpretTab =====
-interpretTab <- tabItem(tabName = "interpretTab",
-                        column(
-                          12,
-                          div(style = "background-color: #d0df92; padding: 10px; border-radius: 25px; height: 100%;",
-                              HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/0x5OG2yBSF8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'))
-                        ))
-
-
-# *Core Shiny UI and Server* -----
-# UI -----
+                        uiOutput("faqtext")
+                    
+                     )
+                    )
+                  ) 
+)
+# Define UI for application that draws a histogram
 ui <- dashboardPage(
+  
   dashboardHeader(
-    title = "Project MIDAS"
-  ),
-  # Sidebar =====
-  sidebar = dashboardSidebar(
-    sidebarMenu(id = "tabs", 
-                menuItem("Upload Data", tabName = "Upload", icon = icon("upload")),
-                menuItem("School", tabName = "Dashboard", icon = icon("school")),
-                #menuItem("Class", tabName = "classTab", icon = icon("users")),
-                menuItem("Student", tabName = "studentTab", icon = icon("user-graduate")),
-                #menuItem("Archive", tabName = "archiveTab", icon = icon("archive")),
-                menuItem("Frequently Asked Questions", tabName = "faqTab", icon = icon("question-circle")),
-                menuItem("How To Interpret This Data", tabName = "interpretTab", icon = icon("info"))
+  
+    dropdownMenu(
+      type = "tasks",
+      headerText = "Help",
+      icon = icon("question"),
+      badgeStatus = NULL,
+      notificationItem(
+        text ="\tAbout MIDAS",
+        icon = icon("child")
+      ),
+      notificationItem(
+        text ="\tAbout SAEBRS",
+        icon = icon("child")
+      )
+    ),
+    title  =div(img(src="midaslogo.png",height=30), "  ")), #insert image into title
+    
+# Sidebar =====
+sidebar <- dashboardSidebar(
+  sidebarMenu(
+    id = "tabs",
+    menuItem("Student dashboard", tabName = "studentTab",icon = icon("child")),
+    menuItem("School dashboard", tabName = "schoolTab", icon = icon("school")),
+    menuItem("FAQ", tabName = "faqTab", icon = icon("question")),
+    menuItem("Upload Data", tabName = "Upload", icon = icon("upload"),selected = TRUE)
     )
   ),
-  
-  # Body =====
-  body = dashboardBody(
+  body <- dashboardBody(
     shinyjs::useShinyjs(),
+    #fonts
+    tags$head(
+      includeCSS("www/css.css")
+    ),
+    
+    tags$style(HTML('body {font-family:"Poppins"}')),
+    #color the body
+    tags$head(tags$style(HTML('
+        /* logo */
+        .skin-blue .main-header .logo {
+                              background-color: #d0df92;
+                              }
+
+        /* logo when hovered */
+        .skin-blue .main-header .logo:hover {
+                              background-color: #d0df92;
+                              }
+
+        /* navbar (rest of the header) */
+        .skin-blue .main-header .navbar {
+                              background-color: #d0df92;
+                              }        
+        /* main sidebar */
+        .skin-blue .main-sidebar {
+                              background-color: #d0df92;
+                              }
+
+        /* active selected tab in the sidebarmenu */
+        .skin-blue .main-sidebar .sidebar .sidebar-menu .active a{
+                              background-color: #d0df92;
+                              }
+
+        /* other links in the sidebarmenu */
+        .skin-blue .main-sidebar .sidebar .sidebar-menu a{
+                              background-color: #d0df92;
+                              color: black;
+                              }
+
+        /* other links in the sidebarmenu when hovered */
+         .skin-blue .main-sidebar .sidebar .sidebar-menu a:hover{
+                              background-color: #d0df92;
+                              }
+        /* toggle button when hovered  */                    
+         .skin-blue .main-header .navbar .sidebar-toggle:hover{
+                              background-color: #d0df92;
+         }
+        /* body */
+        .content-wrapper, .right-side {
+                                background-color: #d0df92;
+                                }
+                              '))),
+  
     fluidPage(
+      
       tabItems(
         #Upload - Uploading Data to be sent to Dashboard
         uploadTab,
         #School - Displaying School Data from Upload
-        schoolTab,
+        
         #Student - Displaying student data
         studentTab,
-        #Class - Displaying class data
-        #classTab,
-        #Archive - under construction?
-        #archiveTab,
-        #FAQ - Frequently Asked Questions (to be filled out by College of Ed.)
-        faqTab,
-        #Intepret - How the data is interpreted (to contain videos by CoE)
-        interpretTab
+        #School - Displaying school data
+        schoolTab,
+        #FAQ
+        faqTab
+       
       )
       #end of tabs
     )
   )
 )
-
-# Server -----
-server <- function(input, output, session) {
+# Define server logic required to draw a histogram
+server <- function(input, output,session) {
   #Risk minimums reflect total score minimums from fastbridge site Thomas sent.
   lowRiskMin <- 37
   someRiskMin <- 24
@@ -240,7 +353,7 @@ server <- function(input, output, session) {
     removeUI( selector = "#WarningStudent",
               multiple = F
     )
-    updateTabItems(session, "tabs", selected = "Dashboard")
+    updateTabItems(session, "tabs", selected = "studentTab")
   })
   
   #On Upload, distributes this dataframe to all necessary functions at once.
@@ -261,7 +374,7 @@ server <- function(input, output, session) {
   })
   
   output$faqtext <- renderUI({
-    filename <- normalizePath(file.path('data', paste('faq', '.txt', sep='')))
+    filename <- normalizePath(file.path('www', paste('faq', '.txt', sep='')))
     fileText <- readLines(filename)
     splitText <- stringi::stri_split(str = fileText, regex = '\\n')
     replacedText <- lapply(splitText, p)
@@ -274,8 +387,8 @@ server <- function(input, output, session) {
   })
   output$studentImage <- renderImage({
     # Load student image
-    filename <- normalizePath(file.path('assets/images',
-                                        paste('student-clip-art', '.png', sep='')))
+    filename <- normalizePath(file.path('www',
+                                        paste('student', '.png', sep='')))
     
     # Return a list containing the filename and alt text
     list(src = filename,
@@ -297,19 +410,56 @@ server <- function(input, output, session) {
     selectedStudent$data$lastName
   })
   
+  output$SocialTRS <- renderText({
+    selectedStudent$data$socialBehavior
+  })
+  output$AcademicTRS <- renderText({
+    selectedStudent$data$academicBehavior
+  })
+  output$EmotionalTRS <- renderText({
+    selectedStudent$data$emotionalBehavior
+  })
+  #TRS VALUES
+  output$SocialTRS <- renderText({
+    selectedStudent$data$TRSsocialBehavior
+  })
+  output$AcademicTRS <- renderText({
+    selectedStudent$data$TRSacademicBehavior
+  })
+  output$EmotionalTRS <- renderText({
+    selectedStudent$data$TRSemotionalBehavior
+  })
+  #mySAEBRS values
+  output$SocialSAEBRS <- renderText({
+    selectedStudent$data$socialBehavior
+  })
+  output$AcademicSAEBRS <- renderText({
+    selectedStudent$data$academicBehavior
+  })
+  output$EmotionalSAEBRS <- renderText({
+    selectedStudent$data$emotionalBehavior
+  })
+  
   #School-wide TRS bargraph outputs
   output$trstotalBar <- renderPlot({
-    df_tbrange <- df() %>% mutate(ranges = cut(TRStotalBehavior, c(-1, 24, 37, Inf))) %>%
+    df_abrange <- df() %>% mutate(ranges = cut(academicBehavior, c(-1, 6, 9, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
-    studenttotalplot <- ggplot(df_tbrange, aes(x = ranges, y = n)) +
+    df_abrange
+    studenttotalplot <- ggplot(df_abrange, aes(x = ranges, y = n)) +
       geom_bar(stat = 'identity', aes(fill=ranges)) +
       geom_text(aes(label=n),position=position_dodge(width=0.9),vjust=-0.25) +
       theme(legend.position = "none") + 
-      ggtitle("TRS Total Score Distribution") + 
+      ggtitle("TRS-TOTAL Avarage Score") + 
       xlab("Risk Levels") + ylab("Number of Students") + 
-      scale_x_discrete(labels=c("High Risk", "Some Risk", "Low Risk"))
+      scale_x_discrete(labels=c("High Risk", "Some Risk", "Low Risk")+ 
+                         theme(
+                           panel.grid.minor = element_blank(), 
+                           panel.grid.major = element_blank(),
+                           panel.background = element_blank(),
+                           plot.background = element_blank()
+                         ))
     return(studenttotalplot)
-  })
+  },bg="transparent")
   output$trssocialBar <- renderPlot({
     df_sbrange <- df() %>% mutate(ranges = cut(TRSsocialBehavior, c(-1, 9, 12, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
@@ -382,9 +532,15 @@ server <- function(input, output, session) {
       theme(legend.position = "none") + 
       ggtitle("MySAEBRS Academic Score Distribution") + 
       xlab("Risk Levels") + ylab("Number of Students") + 
-      scale_x_discrete(labels=c("High Risk", "Some Risk", "Low Risk"))
+      scale_x_discrete(labels=c("High Risk", "Some Risk", "Low Risk")+ 
+                         theme(
+                           panel.grid.minor = element_blank(), 
+                           panel.grid.major = element_blank(),
+                           panel.background = element_blank(),
+                           plot.background = element_blank()
+                         ))
     return(studenttotalplot)
-  })
+  },bg="transparent")
   output$emotionalBar <- renderPlot({
     df_ebrange <- df() %>% mutate(ranges = cut(emotionalBehavior, c(-1, 7, 10, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
@@ -444,7 +600,7 @@ server <- function(input, output, session) {
              "sometotalms" = return(some_total_MS()[some_total_MS()$grade == input$grade,]),
              "hightotalms" = return(high_total_MS()[high_total_MS()$grade == input$grade,]),
              "alltotalms" = return(all_total_MS()[all_total_MS()$grade == input$grade,])
-             )
+      )
     }
     # if all grades are selected, simply return MS without conditional
     else{
@@ -456,8 +612,10 @@ server <- function(input, output, session) {
              "alltotalms" = return(all_total_MS())
       )
     }
-      
+    
   })
+  
+  
   
   #Student MySAEBRS and TRS bargraph outputs
   output$saeberstudentBar <- renderPlot({
@@ -470,11 +628,11 @@ server <- function(input, output, session) {
     long_df <- MySAEBRSstats %>% gather(Category, Score)
     #create ggplot with data, coloring, adjusting axis data and data presentation.
     studenttotalplot <- ggplot(long_df, aes(x = Category, y = Score)) +
-                        geom_bar(stat = 'identity', aes(fill=Category)) +
-                        geom_text(aes(label=Score),position=position_dodge(width=0.9),vjust=-0.25) +
-                        theme(legend.position = "none") + 
-                        ggtitle("mySAEBER Scores") + 
-                        scale_x_discrete(labels=c("Total", "Emotional", "Academic", "Social"))
+      geom_bar(stat = 'identity', aes(fill=Category)) +
+      geom_text(aes(label=Score),position=position_dodge(width=0.9),vjust=-0.25) +
+      theme(legend.position = "none") + 
+      ggtitle("mySAEBER Scores") + 
+      scale_x_discrete(labels=c("Total", "Emotional", "Academic", "Social"))
     return(studenttotalplot)
   })
   output$trsstudentBar <- renderPlot({
@@ -487,16 +645,14 @@ server <- function(input, output, session) {
     long_df <- trsstats %>% gather(Category, Score)
     #create ggplot with data, coloring, adjusting axis data and data presentation.
     studenttotalplot <- ggplot(long_df, aes(x = Category, y = Score)) +
-                        geom_bar(stat = 'identity', aes(fill=Category)) +
-                        geom_text(aes(label=Score),position=position_dodge(width=0.9),vjust=-0.25) +
-                        theme(legend.position = "none", axis.title.x = element_blank()) + 
-                        ggtitle("TRS Scores") + 
-                        scale_x_discrete(labels=c("Total", "Emotional", "Academic", "Social"))
+      geom_bar(stat = 'identity', aes(fill=Category)) +
+      geom_text(aes(label=Score),position=position_dodge(width=0.9),vjust=-0.25) +
+      theme(legend.position = "none", axis.title.x = element_blank()) + 
+      ggtitle("TRS Scores") + 
+      scale_x_discrete(labels=c("Total", "Emotional", "Academic", "Social"))
     return(studenttotalplot)
   })
+  output$tableTRS <- renderTable(iris)
 }
-
-
-
-# *Shiny Initialization* ---- 
+# Run the application 
 shinyApp(ui = ui, server = server)
