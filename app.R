@@ -53,8 +53,7 @@ uploadTab <- tabItem(tabName = "Upload",
                        box(width = 12,
                            fileInput("file1", "Please Upload File (.csv, .xls, .xlsx)",
                                      multiple = FALSE,
-                                     accept = c("text/csv", ".xls",
-                                                "text/comma-separated-values,text/plain",
+                                     accept = c(".xls",
                                                 ".csv",
                                                 ".xlsx")
                            )
