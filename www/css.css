@@ -1,0 +1,9 @@
+@font-face {  
+  src: url(Poppins.ttf);
+  font-family: "Poppins";
+}
+
+.p_Style {
+	font-family: 'Poppins';
+	color: red;
+}
