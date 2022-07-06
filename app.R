@@ -22,7 +22,7 @@ schoolTab <- tabItem(tabName = "Dashboard",
                      fluidRow(splitLayout(plotOutput("trstotalBar"),
                                           plotOutput("totalBar"))
                               ),
-                     fluidRow(splitLayout(splitLayout(plotOutput("trssocialBar"),
+                     fluidRow(splitLayout(splitLayout(box(background = ,plotOutput("trssocialBar"),width = 12),
                                                       plotOutput("trsacademicBar"),
                                                       plotOutput("trsemotionalBar")),
                                           splitLayout(plotOutput("socialBar"),
@@ -143,9 +143,10 @@ studentTab <- tabItem(tabName = "studentTab",
                                 
                                 column(2,
                                        p(tags$b("Test Score"))),
-                                column(5,style = "background-color:white; padding: 5px; border-radius: 25px; height: 100%; border-style: solid;",
-                                       align = "center",
-                                       textOutput("testscore"))
+                                column(5,style = "background-color:white; padding: 20px; border-radius: 25px; height: 100%; border-style: solid;",
+                                       align = "center")
+                                
+                                
                               ),
                               
                               
@@ -377,7 +378,34 @@ server <- function(input, output, session) {
   first <- reactiveVal()
   last <- reactiveVal()
   
-
+  #value boxes
+  output$totalBox <- renderValueBox({
+    valueBox(
+        selectedStudent$data$totalTRS, "Total TRS", icon = icon("list"),
+      color = "purple"
+    )
+  })
+  
+  output$socialBox <- renderValueBox({
+    valueBox(
+      selectedStudent$data$socialTRS, "Social TRS", icon = icon("thumbs-up", lib = "glyphicon"),
+      color = "yellow"
+    )
+  })
+  
+  output$academicBox <- renderValueBox({
+    valueBox(
+      textOutput("academicTRS"), "Academic TRS", icon = icon("thumbs-up", lib = "glyphicon"),
+      color = "yellow"
+    )
+  })
+  
+  output$emotionalBox <- renderValueBox({
+    valueBox(
+      textOutput("emotionalTRS"), "Emotional TRS", icon = icon("thumbs-up", lib = "glyphicon"),
+      color = "yellow"
+    )
+  })
   
   #On Clicking warning button, sends user to upload page.
   observeEvent(input$Warning, {
@@ -457,6 +485,7 @@ server <- function(input, output, session) {
     df_tbrange <- df() %>% mutate(ranges = cut(TRStotalBehavior, c(-1, 24, 37, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
     studenttotalplot <- ggplot(df_tbrange, aes(x = ranges, y = n)) +
+      theme_classic() +
       geom_bar(stat = 'identity', aes(fill=ranges)) +
       geom_text(aes(label=n),position=position_dodge(width=0.9),vjust=-0.25) +
       theme(legend.position = "none") + 
@@ -588,10 +617,6 @@ server <- function(input, output, session) {
     tmp <- df()
   })
   
-  output$testscore <- renderText({
-    selectedStudent$data$prevTestPerf
-  })
-  
   #Selectable dataframe display of CSV contents
   output$contentsTable <- renderTable({
     options = list(scrollX = TRUE)
@@ -653,36 +678,6 @@ server <- function(input, output, session) {
                         scale_x_discrete(labels=c("Social", "Academic", "Emotional", "Total"))
     return(studenttotalplot)
   })
-  
-  #value boxes
-  output$totalBox <- renderValueBox({
-    valueBox(
-      selectedStudent$data$TRStotalBehavior, "Total TRS", icon = icon("list"),
-      color = "purple"
-    )
-  })
-  
-  output$socialBox <- renderValueBox({
-    valueBox(
-      selectedStudent$data$TRSsocialBehavior, "Social TRS", icon = icon("thumbs-up", lib = "glyphicon"),
-      color = "yellow"
-    )
-  })
-  
-  output$academicBox <- renderValueBox({
-    valueBox(
-      selectedStudent$data$TRSacademicBehavior, "Academic TRS", icon = icon("thumbs-up", lib = "glyphicon"),
-      color = "yellow"
-    )
-  })
-  
-  output$emotionalBox <- renderValueBox({
-    valueBox(
-      selectedStudent$data$TRSemotionalBehavior, "Emotional TRS", icon = icon("thumbs-up", lib = "glyphicon"),
-      color = "yellow"
-    )
-  })
-  
 }
 
 
