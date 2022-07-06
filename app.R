@@ -378,34 +378,7 @@ server <- function(input, output, session) {
   first <- reactiveVal()
   last <- reactiveVal()
   
-  #value boxes
-  output$totalBox <- renderValueBox({
-    valueBox(
-        selectedStudent$data$totalTRS, "Total TRS", icon = icon("list"),
-      color = "purple"
-    )
-  })
-  
-  output$socialBox <- renderValueBox({
-    valueBox(
-      selectedStudent$data$socialTRS, "Social TRS", icon = icon("thumbs-up", lib = "glyphicon"),
-      color = "yellow"
-    )
-  })
-  
-  output$academicBox <- renderValueBox({
-    valueBox(
-      textOutput("academicTRS"), "Academic TRS", icon = icon("thumbs-up", lib = "glyphicon"),
-      color = "yellow"
-    )
-  })
-  
-  output$emotionalBox <- renderValueBox({
-    valueBox(
-      textOutput("emotionalTRS"), "Emotional TRS", icon = icon("thumbs-up", lib = "glyphicon"),
-      color = "yellow"
-    )
-  })
+
   
   #On Clicking warning button, sends user to upload page.
   observeEvent(input$Warning, {
@@ -678,6 +651,36 @@ server <- function(input, output, session) {
                         scale_x_discrete(labels=c("Social", "Academic", "Emotional", "Total"))
     return(studenttotalplot)
   })
+  
+  #value boxes
+  output$totalBox <- renderValueBox({
+    valueBox(
+      selectedStudent$data$TRStotalBehavior, "Total TRS", icon = icon("list"),
+      color = "purple"
+    )
+  })
+  
+  output$socialBox <- renderValueBox({
+    valueBox(
+      selectedStudent$data$TRSsocialBehavior, "Social TRS", icon = icon("thumbs-up", lib = "glyphicon"),
+      color = "yellow"
+    )
+  })
+  
+  output$academicBox <- renderValueBox({
+    valueBox(
+      selectedStudent$data$TRSacademicBehavior, "Academic TRS", icon = icon("thumbs-up", lib = "glyphicon"),
+      color = "yellow"
+    )
+  })
+  
+  output$emotionalBox <- renderValueBox({
+    valueBox(
+      selectedStudent$data$TRSemotionalBehavior, "Emotional TRS", icon = icon("thumbs-up", lib = "glyphicon"),
+      color = "yellow"
+    )
+  })
+  
 }
 
 
