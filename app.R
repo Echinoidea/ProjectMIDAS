@@ -473,7 +473,7 @@ server <- function(input, output, session) {
                         geom_text(aes(label=Score),position=position_dodge(width=0.9),vjust=-0.25) +
                         theme(legend.position = "none") + 
                         ggtitle("mySAEBER Scores") + 
-                        scale_x_discrete(labels=c("Total", "Emotional", "Academic", "Social"))
+                        scale_x_discrete(labels=c("Social", "Academic", "Emotional", "Total"))
     return(studenttotalplot)
   })
   output$trsstudentBar <- renderPlot({
@@ -490,7 +490,7 @@ server <- function(input, output, session) {
                         geom_text(aes(label=Score),position=position_dodge(width=0.9),vjust=-0.25) +
                         theme(legend.position = "none", axis.title.x = element_blank()) + 
                         ggtitle("TRS Scores") + 
-                        scale_x_discrete(labels=c("Total", "Emotional", "Academic", "Social"))
+                        scale_x_discrete(labels=c("Social", "Academic", "Emotional", "Total"))
     return(studenttotalplot)
   })
 }
