@@ -53,8 +53,7 @@ uploadTab <- tabItem(tabName = "Upload",
                        box(width = 12,
                            fileInput("file1", "Please Upload File (.csv, .xls, .xlsx)",
                                      multiple = FALSE,
-                                     accept = c("text/csv", ".xls",
-                                                "text/comma-separated-values,text/plain",
+                                     accept = c(".xls",
                                                 ".csv",
                                                 ".xlsx")
                            )
@@ -474,7 +473,7 @@ server <- function(input, output, session) {
                         geom_text(aes(label=Score),position=position_dodge(width=0.9),vjust=-0.25) +
                         theme(legend.position = "none") + 
                         ggtitle("mySAEBER Scores") + 
-                        scale_x_discrete(labels=c("Total", "Emotional", "Academic", "Social"))
+                        scale_x_discrete(labels=c("Social", "Academic", "Emotional", "Total"))
     return(studenttotalplot)
   })
   output$trsstudentBar <- renderPlot({
@@ -491,7 +490,7 @@ server <- function(input, output, session) {
                         geom_text(aes(label=Score),position=position_dodge(width=0.9),vjust=-0.25) +
                         theme(legend.position = "none", axis.title.x = element_blank()) + 
                         ggtitle("TRS Scores") + 
-                        scale_x_discrete(labels=c("Total", "Emotional", "Academic", "Social"))
+                        scale_x_discrete(labels=c("Social", "Academic", "Emotional", "Total"))
     return(studenttotalplot)
   })
 }
