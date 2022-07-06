@@ -143,10 +143,9 @@ studentTab <- tabItem(tabName = "studentTab",
                                 
                                 column(2,
                                        p(tags$b("Test Score"))),
-                                column(5,style = "background-color:white; padding: 20px; border-radius: 25px; height: 100%; border-style: solid;",
-                                       align = "center")
-                                
-                                
+                                column(5,style = "background-color:white; padding: 5px; border-radius: 25px; height: 100%; border-style: solid;",
+                                       align = "center",
+                                       textOutput("testscore"))
                               ),
                               
                               
@@ -587,6 +586,10 @@ server <- function(input, output, session) {
   })
   all_total_TRS <- reactive({
     tmp <- df()
+  })
+  
+  output$testscore <- renderText({
+    selectedStudent$data$prevTestPerf
   })
   
   #Selectable dataframe display of CSV contents
