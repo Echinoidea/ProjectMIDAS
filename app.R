@@ -22,7 +22,7 @@ schoolTab <- tabItem(tabName = "Dashboard",
                      fluidRow(splitLayout(plotOutput("trstotalBar"),
                                           plotOutput("totalBar"))
                               ),
-                     fluidRow(splitLayout(splitLayout(box(background = ,plotOutput("trssocialBar"),width = 12),
+                     fluidRow(splitLayout(splitLayout(plotOutput("trssocialBar"),
                                                       plotOutput("trsacademicBar"),
                                                       plotOutput("trsemotionalBar")),
                                           splitLayout(plotOutput("socialBar"),
@@ -458,7 +458,6 @@ server <- function(input, output, session) {
     df_tbrange <- df() %>% mutate(ranges = cut(TRStotalBehavior, c(-1, 24, 37, Inf))) %>%
       group_by(ranges) %>% tally() %>% as.data.frame()
     studenttotalplot <- ggplot(df_tbrange, aes(x = ranges, y = n)) +
-      theme_classic() +
       geom_bar(stat = 'identity', aes(fill=ranges)) +
       geom_text(aes(label=n),position=position_dodge(width=0.9),vjust=-0.25) +
       theme(legend.position = "none") + 
