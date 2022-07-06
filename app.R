@@ -143,8 +143,9 @@ studentTab <- tabItem(tabName = "studentTab",
                                 
                                 column(2,
                                        p(tags$b("Test Score"))),
-                                column(5,style = "background-color:white; padding: 20px; border-radius: 25px; height: 100%; border-style: solid;",
-                                       align = "center")
+                                column(5,style = "background-color:white; padding: 5px; border-radius: 25px; height: 100%; border-style: solid;",
+                                       align = "center",
+                                       textOutput("testscore"))
                                 
                                 
                               ),
@@ -161,25 +162,10 @@ studentTab <- tabItem(tabName = "studentTab",
                                   
                                     
                                     verticalLayout(fluid = TRUE,
-                                      valueBoxOutput("totalBox"),
-                                  
-                                    
-                                    
-                                    
-                                      valueBoxOutput("socialBox"),
-                                   
-                                    
-                                    
-                                    
-                                    
-                                      valueBoxOutput("emotionalBox"),
-                                   
-                                    
-                                   # p(tags$b("Social TRS")),
-                                   # textOutput("AcademicTRS"),
-                                   
-                                   
-                                   valueBoxOutput("academicBox"),
+                                    valueBoxOutput("totalBox"),
+                                    valueBoxOutput("socialBox"),
+                                    valueBoxOutput("academicBox"),
+                                    valueBoxOutput("emotionalBox")
                                   
                                    
                                    
@@ -199,20 +185,16 @@ studentTab <- tabItem(tabName = "studentTab",
                                 align = "center",
                                 splitLayout
                                 (
-                                  column(
-                                    4,
-                                    p(tags$b("Total")),
-                                    textOutput("TotalSAEBRS"),
-                                    br(),
-                                    p(tags$b("Social")),
-                                    textOutput("SocialSAEBRS"),
-                                    br(),
-                                    p(tags$b("Social")),
-                                    textOutput("AcademicSAEBRS"),
-                                    br(),
-                                    p(tags$b("Social")),
-                                    textOutput("EmotionalSAEBRS")
-                                  ),
+                                  splitLayout
+                                  (
+                                    
+                                    
+                                    verticalLayout(fluid = TRUE,
+                                                   valueBoxOutput("MYtotalBox"),
+                                                   valueBoxOutput("MYsocialBox"),
+                                                   valueBoxOutput("MYacademicBox"),
+                                                   valueBoxOutput("MYemotionalBox")
+                                    ),
                                   box(background = "maroon", plotOutput("saeberstudentBar"),width = 12)
                                 )
                               ),fluid = TRUE
@@ -221,7 +203,7 @@ studentTab <- tabItem(tabName = "studentTab",
                         )
                       )
 
-
+)
 
 
 
@@ -378,34 +360,7 @@ server <- function(input, output, session) {
   first <- reactiveVal()
   last <- reactiveVal()
   
-  #value boxes
-  output$totalBox <- renderValueBox({
-    valueBox(
-        selectedStudent$data$totalTRS, "Total TRS", icon = icon("list"),
-      color = "purple"
-    )
-  })
-  
-  output$socialBox <- renderValueBox({
-    valueBox(
-      selectedStudent$data$socialTRS, "Social TRS", icon = icon("thumbs-up", lib = "glyphicon"),
-      color = "yellow"
-    )
-  })
-  
-  output$academicBox <- renderValueBox({
-    valueBox(
-      textOutput("academicTRS"), "Academic TRS", icon = icon("thumbs-up", lib = "glyphicon"),
-      color = "yellow"
-    )
-  })
-  
-  output$emotionalBox <- renderValueBox({
-    valueBox(
-      textOutput("emotionalTRS"), "Emotional TRS", icon = icon("thumbs-up", lib = "glyphicon"),
-      color = "yellow"
-    )
-  })
+
   
   #On Clicking warning button, sends user to upload page.
   observeEvent(input$Warning, {
@@ -617,6 +572,10 @@ server <- function(input, output, session) {
     tmp <- df()
   })
   
+  output$testscore <- renderText({
+    selectedStudent$data$prevTestPerf
+  })
+  
   #Selectable dataframe display of CSV contents
   output$contentsTable <- renderTable({
     options = list(scrollX = TRUE)
@@ -678,6 +637,64 @@ server <- function(input, output, session) {
                         scale_x_discrete(labels=c("Social", "Academic", "Emotional", "Total"))
     return(studenttotalplot)
   })
+  
+  #value boxes
+  output$totalBox <- renderValueBox({
+    valueBox(
+      selectedStudent$data$TRStotalBehavior, "Total TRS", icon = icon("list"),
+      color = "purple"
+    )
+  })
+  
+  output$socialBox <- renderValueBox({
+    valueBox(
+      selectedStudent$data$TRSsocialBehavior, "Social", icon = icon("thumbs-up", lib = "glyphicon"),
+      color = "red"
+    )
+  })
+  
+  output$academicBox <- renderValueBox({
+    valueBox(
+      selectedStudent$data$TRSacademicBehavior, "Academic", icon = icon("thumbs-up", lib = "glyphicon"),
+      color = "green"
+    )
+  })
+  
+  output$emotionalBox <- renderValueBox({
+    valueBox(
+      selectedStudent$data$TRSemotionalBehavior, "Emotional", icon = icon("face", lib = "glyphicon"),
+      color = "blue"
+    )
+  })
+  
+  output$MYtotalBox <- renderValueBox({
+    valueBox(
+      selectedStudent$data$totalBehavior, "Total", icon = icon("list"),
+      color = "purple"
+    )
+  })
+  
+  output$MYsocialBox <- renderValueBox({
+    valueBox(
+      selectedStudent$data$socialBehavior, "Social", icon = icon("thumbs-up", lib = "glyphicon"),
+      color = "red"
+    )
+  })
+  
+  output$MYacademicBox <- renderValueBox({
+    valueBox(
+      selectedStudent$data$socialBehavior, "Academic", icon = icon("thumbs-up", lib = "glyphicon"),
+      color = "green"
+    )
+  })
+  
+  output$MYemotionalBox <- renderValueBox({
+    valueBox(
+      selectedStudent$data$emotionalBehavior, "Emotional", icon = icon("thumbs-up", lib = "glyphicon"),
+      color = "blue"
+    )
+  })
+  
 }
 
 
