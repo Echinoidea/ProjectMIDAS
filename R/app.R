@@ -19,7 +19,7 @@ library(ggthemes)
 midasApp <- function() {
   source("./R/archiveTab.R")
   # source("./R/classTab.R")
-  # source("./R/schoolTab.R")
+  source("./R/schoolTab.R")
   source("./R/studentViewTab.R")
   source("./R/uploadTab.R")
   
@@ -33,6 +33,7 @@ midasApp <- function() {
         # menuItem("Dashboard", tabName = "Dashboard"),
         menuItem("Student", tabName = "studentTab"),
         # menuItem("Class", tabName = "classTab"),
+        menuItem("School", tabName = "schoolTab"),
         menuItem("Archive", tabName = "archiveTab")
       )
     ),
@@ -100,6 +101,7 @@ midasApp <- function() {
           # schoolTabUI("schoolTab"),
           # # # Student - Displaying student data
           studentViewTabUI("studentViewTab"),
+          schoolTabUI("schoolTab"),
           # # # Class - Displaying class data
           # classTabUI("classTab"),
           # # # Archive - under construction?
@@ -114,6 +116,7 @@ midasApp <- function() {
     uploadedData <- uploadTabServer("uploadTab")
     # schoolTabServer("schoolTab")
     studentViewTabServer("studentViewTab", uploadedData)
+    schoolTabServer("schoolTab", uploadedData)
     # classTabServer("classTab")
     archiveTabServer("archiveTab", uploadedData)
   }
@@ -125,6 +128,11 @@ midasApp()
 # Color scheme for UI
 # > brewer.pal(9, "GnBu")
 # [1] "#F7FCF0" "#E0F3DB" "#CCEBC5" "#A8DDB5" "#7BCCC4" "#4EB3D3" "#2B8CBE" "#0868AC" "#084081"
+
 # Color scheme for graphs
 # > RColorBrewer::brewer.pal(12, "Set3")
 # [1] "#8DD3C7" "#FFFFB3" "#BEBADA" "#FB8072" "#80B1D3" "#FDB462" "#B3DE69" "#FCCDE5" "#D9D9D9" "#BC80BD" "#CCEBC5" "#FFED6F"
+
+# Color palette for accents
+# > RColorBrewer::brewer.pal(9, "Pastel1")
+# [1] "#FBB4AE" "#B3CDE3" "#CCEBC5" "#DECBE4" "#FED9A6" "#FFFFCC" "#E5D8BD" "#FDDAEC" "#F2F2F2"

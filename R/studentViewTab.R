@@ -6,175 +6,258 @@ studentViewTabUI <- function(id, uploadedData) {
   ns <- NS(id)
   
   tabItem(tabName = "studentTab",
+          # Student ID, Demographics, and Test Score header box, divided into 6 columns
           fluidRow(
-            column(
-              4,
-              #style = "background-color: #d0df92; padding: 5px; border-radius: 25px;",
-              style = "background-color: #CCEBC5; padding: 15px;",
-              align = "center",
-              
-              # Render the selectizeInput from the server function to allow accessing uploadedData() IDs
-              uiOutput(NS(id, "inputStudentID")),
-              
-              actionButton(NS(id, "btnStudentID"), label = "Search"),
-              
-              br(),
-              br(),
-              
-              # Student demographic data
+            # ID Search Box
+            box(
+              title = "Student ID#",
               fluidRow(
                 column(
-                  6,
-                  align = "left",
-                  
-                  p(tags$b("Gender")),
-                  br(),
-                  
-                  p(tags$b("Ethnicity")),
-                  br(),
-                  
-                  p(tags$b("Grade")),
-                  br(),
-                  
-                  p(tags$b("Special Education")),
+                  8,
+                  style = "padding-top: 5px; padding-left:10px; padding-bottom:1px; padding-right: 1px;",
+                  uiOutput(NS(id, "inputStudentID"))
                 ),
                 column(
-                  6,
-                  align = "left",
-                  
-                  textOutput(NS(id, "studentGender")),
-                  br(),
-                  
-                  textOutput(NS(id, "studentEthnicity")),
-                  br(),
-                  
-                  textOutput(NS(id, "studentGrade")),
-                  br(),
-                  
-                  textOutput(NS(id, "studentSpecialEd"))
+                  4,
+                  offset = 0,
+                  style = "padding:5px; padding-bottom:1px;",
+                  actionButton(NS(id, "btnStudentID"), label = "Search")
+                )
+              ),
+              
+              width = 2
+            ),
+            
+            # Grade box
+            box(
+              title = "Grade",
+              textOutput(NS(id, "studentGrade")),
+              width = 2
+            ),
+            
+            # Gender box
+            box(
+              title = "Gender",
+              textOutput(NS(id, "studentGender")),
+              width = 2
+            ),
+            
+            # Ethnicity box
+            box(
+              title = "Ethnicity",
+              textOutput(NS(id, "studentEthnicity")),
+              width = 2
+            ),
+            
+            # Special Education Status box
+            box(
+              title = "Special Education",
+              textOutput(NS(id, "studentSpecialEd")),
+              width = 2
+            ),
+            
+            # Test score box
+            box(
+              title = "Test Score",
+              textOutput(NS(id, "studentTestScore")),
+              width = 2
+            )
+          ),
+          
+          fluidRow(
+            # SAEBRS-TRS
+            column(
+              6,
+              verticalLayout(
+                box(
+                  title = "SAEBRS-TRS",
+                  fluidRow(
+                    valueBoxOutput(NS(id, "trsTotalBox"), width = 12)
+                  ),
+                  fluidRow(
+                    valueBoxOutput(NS(id, "trsSocialBox")),
+                    valueBoxOutput(NS(id, "trsAcademicBox")),
+                    valueBoxOutput(NS(id, "trsEmotionalBox"))
+                  ),
+                  width = 12
+                ),
+                # SAEBRS-TRS barplot
+                box(
+                  title = "TRS-TOTAL Average Score",
+                  plotOutput(NS(id, "trsTotalBar")),
+                  width = 12
                 )
               )
             ),
-            #MIDAS Assessments
+            # MySAEBRS
             column(
-              8,
-              #style = "background-color:#d0df92; padding: 15px; border-radius: 25px; height: 100%;",
-              style = "background-color: #CCEBC5; padding: 15px;",
-              
+              6,
               verticalLayout(
-                column(
-                  12,
-                  
-                  column(2,
-                         p(tags$b("Test Score"))),
-                  column(5,
-                         style = "background-color:white; padding: 20px; border-radius: 25px; height: 100%; border-style: solid;",
-                         align = "center")
+                box(
+                  title = "MySAEBRS",
+                  fluidRow(
+                    valueBoxOutput(NS(id, "myTotalBox"), width = 12)
+                  ),
+                  fluidRow(
+                    valueBoxOutput(NS(id, "mySocialBox")),
+                    valueBoxOutput(NS(id, "myAcademicBox")),
+                    valueBoxOutput(NS(id, "myEmotionalBox"))
+                  ),
+                  width = 12
                 ),
-                
-                br(),
-                
-                p(tags$b("SAEBRS-TRS")),
-                column(
-                  4,
-                  style = "background-color:white; padding: 20px; border-radius: 25px; width:100%; height: 100%; border-style: solid;",
-                  align = "center",
-                  splitLayout
-                  (
-                    column(
-                      12,
-                      align = "left",
-                      
-                      column(
-                        4,
-                        align = "left",
-                        
-                        p(tags$b("Total TRS")),
-                        br(),
-                        
-                        p(tags$b("Social TRS")),
-                        br(),
-                        
-                        p(tags$b("Academic TRS")),
-                        br(),
-                        
-                        p(tags$b("Emotional TRS")),
-                        
-                      ),
-                      column(
-                        8,
-                        align = "left",
-                        
-                        textOutput(NS(id, "totalTRS")),
-                        br(),
-                        
-                        textOutput(NS(id, "socialTRS")),
-                        br(),
-                        
-                        textOutput(NS(id, "academicTRS")),
-                        br(),
-                        
-                        textOutput(NS(id, "emotionalTRS"))
-                      )
-                    ),
-                    
-                    plotOutput(NS(id, "trsTotalBar"))
-                  )
-                ),
-                
-                br(),
-                
-                p(tags$b("mySAEBRS")),
-                
-                column(
-                  4,
-                  style = "background-color:white; padding: 20px; border-radius: 25px;width:100%; height: 100%; border-style: solid;",
-                  align = "center",
-                  
-                  splitLayout
-                  (
-                    column(
-                      4,
-                      p(tags$b("Total")),
-                      textOutput(NS(id, "totalSAEBRS")),
-                      
-                      br(),
-                      
-                      p(tags$b("Social")),
-                      textOutput(NS(id, "socialSAEBRS")),
-                      
-                      br(),
-                      
-                      p(tags$b("Social")),
-                      textOutput(NS(id, "academicSAEBRS")),
-                      
-                      br(),
-                      
-                      p(tags$b("Social")),
-                      textOutput(NS(id, "emotionalSAEBRS"))
-                    ),
-                    plotOutput(NS(id, "totalBar"))
-                  )
-                ),fluid = TRUE
+                # SAEBRS-TRS barplot
+                box(
+                  title = "MySAEBRS - Total Score Distribution",
+                  plotOutput(NS(id, "myTotalBar")),
+                  width = 12
+                )
               )
             )
-          ))
+          )
+          #             p(tags$b("Total")),
+          #             textOutput(NS(id, "totalSAEBRS")),
+          #             
+          #             br(),
+          #             
+          #             p(tags$b("Social")),
+          #             textOutput(NS(id, "socialSAEBRS")),
+          #             
+          #             br(),
+          #             
+          #             p(tags$b("Social")),
+          #             textOutput(NS(id, "academicSAEBRS")),
+          #             
+          #             br(),
+          #             
+          #             p(tags$b("Social")),
+          #             textOutput(NS(id, "emotionalSAEBRS"))
+          #           ),
+          #           plotOutput(NS(id, "totalBar"))
+          # 
+          
+          # SAEBRS-TRS and MySAEBRS Scores and Graphs
+          # fluidRow(
+          #   
+          # )
+          # 
+          # 
+          # fluidRow(
+          #   column(
+          #     4,
+          #     #style = "background-color: #d0df92; padding: 5px; border-radius: 25px;",
+          #     style = "background-color: #CCEBC5; padding: 15px;",
+          #     align = "center",
+          #     
+          #     # Render the selectizeInput from the server function to allow accessing uploadedData() IDs
+          #     uiOutput(NS(id, "inputStudentID")),
+          #     
+          #     actionButton(NS(id, "btnStudentID"), label = "Search"),
+          #     
+          #     br(),
+          #     br(),
+          #     
+          #     box(
+          #       title = "Gender",
+          #       textOutput(NS(id, "studentGender"))
+          #     ),
+          #     box(
+          #       title = "Ethnicity",
+          #       textOutput(NS(id, "studentEthnicity"))
+          #     ),
+          #     box(
+          #       title = "Grade",
+          #       textOutput(NS(id, "studentGrade"))
+          #     ),
+          #     box(
+          #       title = "Special Education",
+          #       textOutput(NS(id, "studentSpecialEd"))
+          #     )
+          #   ),
+          #   
+          #   #MIDAS Assessments
+          #   column(
+          #     8,
+          #     #style = "background-color:#d0df92; padding: 15px; border-radius: 25px; height: 100%;",
+          #     style = "background-color: #CCEBC5; padding: 15px;",
+          #     
+          #     verticalLayout(
+          #       column(
+          #         12,
+          #         
+          #         column(2,
+          #                p(tags$b("Test Score"))),
+          #         column(10,
+          #                style = "background-color:white; padding: 20px; border-radius: 25px; height: 100%; border-style: solid;",
+          #                align = "center")
+          #       ),
+          #       
+          #       br(),
+          #       
+          #       fluidRow(
+          #         # SAEBRS-TRS scores valueBoxes
+          #         box(
+          #           title = "SAEBRS-TRS",
+          #           
+          #           fluidRow(
+          #             valueBoxOutput(NS(id, "trsTotalBox"), width = 12)
+          #           ),
+          #           
+          #           fluidRow(
+          #             valueBoxOutput(NS(id, "trsSocialBox")),
+          #             valueBoxOutput(NS(id, "trsAcademicBox")),
+          #             valueBoxOutput(NS(id, "trsEmotionalBox"))
+          #           ) 
+          #         ),
+          #         
+          #         # SAEBRS-TRS barplot
+          #         box(
+          #           plotOutput(NS(id, "trsTotalBar"))
+          #         )
+          #       ),
+          #       
+          #       br(),
+          #       
+          #       p(tags$b("mySAEBRS")),
+          #       
+          #       column(
+          #         12,
+          #         style = "background-color:white; padding: 20px; border-radius: 25px;width:100%; height: 100%; border-style: solid;",
+          #         align = "center",
+          #         
+          #         splitLayout
+          #         (
+          #           column(
+          #       
+          #         )
+          #       ),fluid = TRUE
+          #     )
+          #   )
+          # )
+          )
 }
 
 studentViewTabServer <- function(id, uploadedData) {
   moduleServer(id, function(input, output, session) {
     
+    # Render dynamic UI elements on load ----
     output$inputStudentID <- renderUI({
       selectizeInput(
         NS(id, "txtinStudentID"),
-        label = "Student ID Number",
-        choices = c("", uploadedData()$ID),
-        selected = '',
+        label = NULL,
+        choices = uploadedData()$ID,
+        selected = NULL,
         multiple = FALSE,
-        options = list(create = FALSE)
+        options = list(
+          create = FALSE
+        )
       )
+      # textInput(
+      #   NS(id, "txtinStudentID"),
+      #   label = NULL,
+      #   placeholder = "S###"
+      # )
     })
-    
+
     selectedStudent <- reactiveValues(data = NULL)
     
     searchID <- reactiveVal()
@@ -203,6 +286,44 @@ studentViewTabServer <- function(id, uploadedData) {
       selectedStudent$data$specialEducation
     })
     
+    # ---- RENDER TRS SCORE BOXES ----
+    
+    output$trsTotalBox <- renderValueBox({
+      valueBox(
+        selectedStudent$data$trsTotalBehavior,
+        "TRS Total",
+        width = 12,
+        color = "olive"
+      )
+    })
+    
+    output$trsSocialBox <- renderValueBox({
+      valueBox(
+        selectedStudent$data$trsSocialBehavior,
+        "TRS Social",
+        color = "green"
+      )
+    })
+    
+    output$trsAcademicBox <- renderValueBox({
+      valueBox(
+        selectedStudent$data$trsAcademicBehavior,
+        "TRS Academic",
+        color = "green"
+      )
+    })
+    
+    output$trsEmotionalBox <- renderValueBox({
+      valueBox(
+        selectedStudent$data$emotionalBehavior,
+        "TRS Emotional",
+        color = "green"
+      )
+    })
+    
+    
+    # ---- RENDER MySAEBRS BOXES ----
+    
     output$socialTRS <- renderText({
       selectedStudent$data$trsSocialBehavior
     })
@@ -229,8 +350,11 @@ studentViewTabServer <- function(id, uploadedData) {
       # 
       # #School-wide TRS bargraph outputs
     output$trsTotalBar <- renderPlot({
-      df_abrange <- uploadedData() %>% mutate(ranges = cut(academicBehavior, c(-1, 6, 9, Inf))) %>%
-        group_by(ranges) %>% tally() %>% as.data.frame()
+      df_abrange <- uploadedData() %>% 
+        mutate(ranges = cut(academicBehavior, c(-1, 6, 9, Inf))) %>%
+        group_by(ranges) %>% 
+        tally() %>% 
+        as.data.frame()
       
       df_abrange
       
@@ -239,13 +363,13 @@ studentViewTabServer <- function(id, uploadedData) {
         geom_text(aes(label = n),
                   position = position_dodge(width=0.9),
                   vjust = -0.25) +
-        labs(title = "TRS-TOTAL Average Score", 
+        labs(title = "", 
              x = "Risk Levels", 
              y = "Number of Students") +
         scale_x_discrete(labels=c("High Risk", "Some Risk", "Low Risk")) +
         scale_fill_manual(values = c("#FB8072", "#BEBADA", "#80B1D3")) +
         theme_hc() +
-        theme(legend.position = "none")
+        theme(legend.position = "none", title = element_blank())
     }, bg="transparent")
 
     output$totalBar <- renderPlot({
@@ -258,15 +382,13 @@ studentViewTabServer <- function(id, uploadedData) {
                   position = position_dodge(width=0.9),
                   vjust=-0.25) +
         
-        labs(title = "MySAEBRS Total Score Distribution",
+        labs(title = "",
              x = "Risk Levels",
              y = "Number of Students") +
         scale_x_discrete(labels=c("High Risk", "Some Risk", "Low Risk")) +
         scale_fill_manual(values = c("#FB8072", "#BEBADA", "#80B1D3")) +
         theme_hc() +
-        theme(legend.position = "none")
+        theme(legend.position = "none", theme = element_blank())
     })
   })
 }
-
-#shinyApp(ui = studentViewTabUI("id"), server = studentViewTabServer("id"))
