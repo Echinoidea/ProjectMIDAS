@@ -11,9 +11,7 @@ uploadTabUI <- function(id, label = "Upload Tab") {
               label = "Please Upload File",
               multiple = FALSE,
               accept = c(
-                "text/csv",
-                ".xlsx",
-                "text/comma-separated-values,text/plain",
+                ".xls",
                 ".csv",
                 '.xlsx'
               )

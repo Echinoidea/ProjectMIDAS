@@ -114,125 +114,6 @@ studentViewTabUI <- function(id, uploadedData) {
               )
             )
           )
-          #             p(tags$b("Total")),
-          #             textOutput(NS(id, "totalSAEBRS")),
-          #             
-          #             br(),
-          #             
-          #             p(tags$b("Social")),
-          #             textOutput(NS(id, "socialSAEBRS")),
-          #             
-          #             br(),
-          #             
-          #             p(tags$b("Social")),
-          #             textOutput(NS(id, "academicSAEBRS")),
-          #             
-          #             br(),
-          #             
-          #             p(tags$b("Social")),
-          #             textOutput(NS(id, "emotionalSAEBRS"))
-          #           ),
-          #           plotOutput(NS(id, "totalBar"))
-          # 
-          
-          # SAEBRS-TRS and MySAEBRS Scores and Graphs
-          # fluidRow(
-          #   
-          # )
-          # 
-          # 
-          # fluidRow(
-          #   column(
-          #     4,
-          #     #style = "background-color: #d0df92; padding: 5px; border-radius: 25px;",
-          #     style = "background-color: #CCEBC5; padding: 15px;",
-          #     align = "center",
-          #     
-          #     # Render the selectizeInput from the server function to allow accessing uploadedData() IDs
-          #     uiOutput(NS(id, "inputStudentID")),
-          #     
-          #     actionButton(NS(id, "btnStudentID"), label = "Search"),
-          #     
-          #     br(),
-          #     br(),
-          #     
-          #     box(
-          #       title = "Gender",
-          #       textOutput(NS(id, "studentGender"))
-          #     ),
-          #     box(
-          #       title = "Ethnicity",
-          #       textOutput(NS(id, "studentEthnicity"))
-          #     ),
-          #     box(
-          #       title = "Grade",
-          #       textOutput(NS(id, "studentGrade"))
-          #     ),
-          #     box(
-          #       title = "Special Education",
-          #       textOutput(NS(id, "studentSpecialEd"))
-          #     )
-          #   ),
-          #   
-          #   #MIDAS Assessments
-          #   column(
-          #     8,
-          #     #style = "background-color:#d0df92; padding: 15px; border-radius: 25px; height: 100%;",
-          #     style = "background-color: #CCEBC5; padding: 15px;",
-          #     
-          #     verticalLayout(
-          #       column(
-          #         12,
-          #         
-          #         column(2,
-          #                p(tags$b("Test Score"))),
-          #         column(10,
-          #                style = "background-color:white; padding: 20px; border-radius: 25px; height: 100%; border-style: solid;",
-          #                align = "center")
-          #       ),
-          #       
-          #       br(),
-          #       
-          #       fluidRow(
-          #         # SAEBRS-TRS scores valueBoxes
-          #         box(
-          #           title = "SAEBRS-TRS",
-          #           
-          #           fluidRow(
-          #             valueBoxOutput(NS(id, "trsTotalBox"), width = 12)
-          #           ),
-          #           
-          #           fluidRow(
-          #             valueBoxOutput(NS(id, "trsSocialBox")),
-          #             valueBoxOutput(NS(id, "trsAcademicBox")),
-          #             valueBoxOutput(NS(id, "trsEmotionalBox"))
-          #           ) 
-          #         ),
-          #         
-          #         # SAEBRS-TRS barplot
-          #         box(
-          #           plotOutput(NS(id, "trsTotalBar"))
-          #         )
-          #       ),
-          #       
-          #       br(),
-          #       
-          #       p(tags$b("mySAEBRS")),
-          #       
-          #       column(
-          #         12,
-          #         style = "background-color:white; padding: 20px; border-radius: 25px;width:100%; height: 100%; border-style: solid;",
-          #         align = "center",
-          #         
-          #         splitLayout
-          #         (
-          #           column(
-          #       
-          #         )
-          #       ),fluid = TRUE
-          #     )
-          #   )
-          # )
           )
 }
 
@@ -251,11 +132,6 @@ studentViewTabServer <- function(id, uploadedData) {
           create = FALSE
         )
       )
-      # textInput(
-      #   NS(id, "txtinStudentID"),
-      #   label = NULL,
-      #   placeholder = "S###"
-      # )
     })
 
     selectedStudent <- reactiveValues(data = NULL)
@@ -315,7 +191,7 @@ studentViewTabServer <- function(id, uploadedData) {
     
     output$trsEmotionalBox <- renderValueBox({
       valueBox(
-        selectedStudent$data$emotionalBehavior,
+        selectedStudent$data$trsEmotionalBehavior,
         "TRS Emotional",
         color = "green"
       )
@@ -324,29 +200,61 @@ studentViewTabServer <- function(id, uploadedData) {
     
     # ---- RENDER MySAEBRS BOXES ----
     
-    output$socialTRS <- renderText({
-      selectedStudent$data$trsSocialBehavior
+    output$myTotalBox <- renderValueBox({
+      valueBox(
+        selectedStudent$data$totalBehavior,
+        "Total",
+        color = "olive"
+      )
     })
     
-    output$academicTRS <- renderText({
-      selectedStudent$data$trsAcademicBehavior
+    output$mySocialBox <- renderValueBox({
+      valueBox(
+        selectedStudent$data$socialBehavior,
+        "Social",
+        color = "green"
+      )
     })
     
-    output$emotionalTRS <- renderText({
-      selectedStudent$data$trsEmotionalBehavior
+    output$myEmotionalBox <- renderValueBox({
+      valueBox(
+        selectedStudent$data$emotionalBehavior,
+        "Emotional",
+        color = "green"
+      )
     })
     
-    output$socialSAEBRS <- renderText({
-      selectedStudent$data$socialBehavior
+    output$myAcademicBox <- renderValueBox({
+      valueBox(
+        selectedStudent$data$academicBehavior,
+        "Academic",
+        color = "green"
+      )
     })
     
-    output$academicSAEBRS <- renderText({
-      selectedStudent$data$academicBehavior
-    })
-    
-    output$emotionalSAEBRS <- renderText({
-      selectedStudent$data$emotionalBehavior
-    })
+    # output$socialTRS <- renderText({
+    #   selectedStudent$data$trsSocialBehavior
+    # })
+    # 
+    # output$academicTRS <- renderText({
+    #   selectedStudent$data$trsAcademicBehavior
+    # })
+    # 
+    # output$emotionalTRS <- renderText({
+    #   selectedStudent$data$trsEmotionalBehavior
+    # })
+    # 
+    # output$socialSAEBRS <- renderText({
+    #   selectedStudent$data$socialBehavior
+    # })
+    # 
+    # output$academicSAEBRS <- renderText({
+    #   selectedStudent$data$academicBehavior
+    # })
+    # 
+    # output$emotionalSAEBRS <- renderText({
+    #   selectedStudent$data$emotionalBehavior
+    # })
       # 
       # #School-wide TRS bargraph outputs
     output$trsTotalBar <- renderPlot({
@@ -372,9 +280,12 @@ studentViewTabServer <- function(id, uploadedData) {
         theme(legend.position = "none", title = element_blank())
     }, bg="transparent")
 
-    output$totalBar <- renderPlot({
-      df_tbrange <- uploadedData() %>% mutate(ranges = cut(totalBehavior, c(-1, 24, 37, Inf))) %>%
-        group_by(ranges) %>% tally() %>% as.data.frame()
+    output$myTotalBar <- renderPlot({
+      df_tbrange <- uploadedData() %>%
+        mutate(ranges = cut(totalBehavior, c(-1, 24, 37, Inf))) %>%
+        group_by(ranges) %>% 
+        tally() %>% 
+        as.data.frame()
       
       ggplot(df_tbrange, aes(x = ranges, y = n)) +
         geom_bar(stat = 'identity', aes(fill = ranges)) +
@@ -388,7 +299,7 @@ studentViewTabServer <- function(id, uploadedData) {
         scale_x_discrete(labels=c("High Risk", "Some Risk", "Low Risk")) +
         scale_fill_manual(values = c("#FB8072", "#BEBADA", "#80B1D3")) +
         theme_hc() +
-        theme(legend.position = "none", theme = element_blank())
+        theme(legend.position = "none", title = element_blank())
     })
   })
 }
