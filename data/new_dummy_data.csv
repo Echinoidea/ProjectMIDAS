@@ -1,0 +1,51 @@
+"","gender","ethnicity","grade","specialEducation","prevTestPerf","pastDisciplinary","socialBehavior","academicBehavior","emotionalBehavior","totalBehavior","midasRisk","futureTestPerf","trsSocialBehavior","trsAcademicBehavior","trsEmotionalBehavior","trsTotalBehavior","futureDisciplinary","ID"
+"1","female","Native Hawaiian or Other Pacific Islander",8,"Yes",78,"No",16,11,14,41,31,51,2,13,6,50,"Yes",290
+"2","male","American Indian or Alaska Native",8,"No",48,"No",9,8,9,26,35,60,6,10,13,17,"No",168
+"3","male","Black or African American",7,"Yes",72,"Yes",18,5,20,43,83,85,17,2,5,34,"Yes",924
+"4","female","Native Hawaiian or Other Pacific Islander",8,"Yes",80,"Yes",4,1,21,26,30,24,1,0,11,31,"Yes",203
+"5","male","Asian",6,"No",59,"Yes",11,18,21,50,54,81,12,10,16,56,"Yes",183
+"6","male","Black or African American",8,"No",60,"Yes",14,17,12,43,77,100,7,18,11,27,"Yes",480
+"7","female","American Indian or Alaska Native",7,"Yes",95,"No",7,16,21,44,28,48,8,3,21,42,"No",635
+"8","male","Asian",6,"No",16,"Yes",3,15,21,39,2,91,18,2,1,57,"No",236
+"9","male","Native Hawaiian or Other Pacific Islander",7,"No",89,"Yes",16,18,12,46,5,75,18,13,0,12,"Yes",705
+"10","male","Native Hawaiian or Other Pacific Islander",6,"Yes",12,"Yes",13,11,15,39,50,79,6,0,16,5,"Yes",491
+"11","female","Black or African American",8,"No",60,"No",12,10,17,39,56,61,0,7,16,25,"Yes",645
+"12","male","Black or African American",8,"No",28,"Yes",13,18,16,47,34,74,1,11,18,15,"No",311
+"13","female","American Indian or Alaska Native",8,"No",100,"Yes",2,17,18,37,91,36,17,13,17,20,"No",580
+"14","female","Asian",7,"No",84,"Yes",14,15,17,46,82,98,16,13,14,8,"No",874
+"15","female","White",8,"Yes",77,"Yes",15,14,21,50,78,56,9,12,20,55,"Yes",206
+"16","male","Native Hawaiian or Other Pacific Islander",6,"No",62,"Yes",11,18,13,42,84,94,14,15,14,44,"Yes",260
+"17","male","Asian",7,"Yes",10,"Yes",9,15,10,34,36,38,6,16,5,4,"Yes",761
+"18","male","Black or African American",6,"No",85,"No",10,16,20,46,82,57,16,6,5,24,"No",536
+"19","male","Native Hawaiian or Other Pacific Islander",7,"Yes",80,"Yes",7,18,10,35,13,52,14,8,7,30,"No",344
+"20","female","Black or African American",8,"Yes",34,"No",14,6,19,39,63,51,9,4,18,41,"No",272
+"21","male","Asian",6,"Yes",36,"No",15,18,16,49,30,50,7,12,11,11,"Yes",441
+"22","male","Native Hawaiian or Other Pacific Islander",6,"Yes",84,"No",5,17,16,38,26,89,9,8,16,3,"No",375
+"23","female","Native Hawaiian or Other Pacific Islander",8,"No",10,"No",1,15,15,31,37,80,1,8,2,26,"Yes",744
+"24","male","Asian",6,"Yes",47,"Yes",10,16,15,41,65,47,15,0,6,32,"Yes",911
+"25","female","Asian",6,"Yes",85,"Yes",16,9,6,31,82,92,3,18,8,21,"Yes",360
+"26","male","Black or African American",6,"Yes",92,"No",12,12,16,40,43,69,11,10,6,28,"Yes",824
+"27","male","American Indian or Alaska Native",7,"Yes",87,"No",13,3,6,22,30,66,3,15,10,13,"No",362
+"28","male","Black or African American",6,"No",70,"No",16,16,12,44,34,58,3,8,19,43,"No",409
+"29","female","White",8,"No",62,"No",9,9,20,38,48,65,1,10,16,16,"No",412
+"30","male","Asian",6,"Yes",92,"No",18,9,16,43,8,89,0,6,10,18,"No",797
+"31","male","Asian",7,"Yes",70,"No",14,16,4,34,59,62,16,6,21,0,"No",560
+"32","female","Asian",6,"Yes",69,"No",14,6,3,23,63,14,16,13,15,38,"Yes",273
+"33","female","Asian",7,"No",85,"Yes",18,15,13,46,96,87,10,6,15,14,"Yes",930
+"34","female","Native Hawaiian or Other Pacific Islander",7,"No",63,"No",18,2,16,36,45,44,16,12,15,22,"No",552
+"35","female","Native Hawaiian or Other Pacific Islander",7,"No",78,"No",18,15,16,49,52,14,3,15,19,1,"No",996
+"36","male","Native Hawaiian or Other Pacific Islander",6,"Yes",81,"Yes",5,13,14,32,99,52,6,3,9,9,"Yes",540
+"37","male","American Indian or Alaska Native",7,"No",36,"Yes",16,6,7,29,47,92,18,3,7,39,"No",285
+"38","male","Asian",6,"Yes",98,"Yes",15,16,16,47,10,96,14,4,4,2,"Yes",278
+"39","male","American Indian or Alaska Native",8,"No",74,"Yes",5,5,21,31,40,88,3,9,9,48,"Yes",121
+"40","male","Native Hawaiian or Other Pacific Islander",8,"Yes",71,"Yes",7,3,16,26,72,61,8,12,20,23,"Yes",518
+"41","male","American Indian or Alaska Native",8,"Yes",53,"Yes",10,15,13,38,93,66,13,11,21,35,"No",897
+"42","female","Black or African American",8,"No",73,"No",12,9,10,31,87,65,12,8,0,53,"Yes",700
+"43","male","White",8,"No",59,"Yes",15,10,14,39,89,97,14,1,11,54,"Yes",316
+"44","male","White",8,"No",33,"Yes",18,16,12,46,82,100,9,12,16,7,"Yes",483
+"45","female","White",6,"Yes",15,"No",17,11,6,34,74,81,8,13,9,37,"No",863
+"46","female","Native Hawaiian or Other Pacific Islander",7,"Yes",91,"No",9,9,15,33,78,79,13,11,1,47,"Yes",158
+"47","female","Black or African American",6,"No",90,"Yes",13,16,18,47,12,55,5,3,10,45,"Yes",210
+"48","female","American Indian or Alaska Native",7,"Yes",72,"Yes",16,13,11,40,46,57,11,9,20,49,"No",490
+"49","male","American Indian or Alaska Native",7,"Yes",48,"No",11,15,15,41,6,98,6,5,3,33,"No",152
+"50","male","Native Hawaiian or Other Pacific Islander",6,"No",90,"Yes",18,18,21,57,15,26,6,11,18,19,"Yes",321
