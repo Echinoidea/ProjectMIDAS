@@ -17,11 +17,11 @@ library(ggthemes)
 #   - Add a source() call in the main midasApp function for each module.
 
 midasApp <- function() {
-  source("./R/archiveTab.R")
+  source("./archiveTab.R")
   # source("./R/classTab.R")
-  source("./R/schoolTab.R")
-  source("./R/studentViewTab.R")
-  source("./R/uploadTab.R")
+  source("./schoolTab.R")
+  source("./studentViewTab.R")
+  source("./uploadTab.R")
   
   ui <- dashboardPage(
     dashboardHeader(title = "Project MIDAS"),
