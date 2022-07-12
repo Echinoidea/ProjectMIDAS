@@ -2,10 +2,12 @@ library(shiny) #library for running Shiny Webapp
 library(shinyjs) #library for js functions
 library(shinydashboard) #dashboarding library
 library(shinydashboardPlus) # For additional shiny dashboard skins and other visuals
+library(reshape2)
+library(stringi)
 library(readxl) #library for taking in XLS/XLSX
 library(ggplot2) #library for basic plots
 library(dplyr)
-#library(tidyverse) #megapackage for analysis/operations
+library(tidyverse) #megapackage for analysis/operations
 library(readr) #library for taking in
 library(ggthemes)
 
@@ -22,6 +24,7 @@ midasApp <- function() {
   source("./schoolTab.R")
   source("./studentViewTab.R")
   source("./uploadTab.R")
+  source("./faqTab.R")
   
   ui <- dashboardPage(
     dashboardHeader(title = "Project MIDAS"),
@@ -29,12 +32,14 @@ midasApp <- function() {
     sidebar = dashboardSidebar(
       sidebarMenu(
         id = "tabs",
-        menuItem("Upload Data", tabName = "uploadTab"),
+        menuItem("Upload Data", tabName = "uploadTab", icon = icon("upload")),
         # menuItem("Dashboard", tabName = "Dashboard"),
-        menuItem("Student", tabName = "studentTab"),
+        menuItem("Student", tabName = "studentTab", icon = icon("user-graduate")),
         # menuItem("Class", tabName = "classTab"),
-        menuItem("School", tabName = "schoolTab"),
-        menuItem("Archive", tabName = "archiveTab")
+        menuItem("School", tabName = "schoolTab", icon = icon("school")),
+        #menuItem("Archive", tabName = "archiveTab"),
+        menuItem("Frequently Asked Questions", tabName = "faqTab", icon = icon("question-circle")),
+        menuItem("How To Interpret This Data", tabName = "interpretTab", icon = icon("info"))
       )
     ),
     
@@ -105,7 +110,8 @@ midasApp <- function() {
           # # # Class - Displaying class data
           # classTabUI("classTab"),
           # # # Archive - under construction?
-          archiveTabUI("archiveTab")
+          archiveTabUI("archiveTab"),
+          faqTabUI("faqtab")
         )
         #end of tabs))
       ))
@@ -119,6 +125,7 @@ midasApp <- function() {
     schoolTabServer("schoolTab", uploadedData)
     # classTabServer("classTab")
     archiveTabServer("archiveTab", uploadedData)
+    faqTabServer("faqTab")
   }
   
   shinyApp(ui, server)
