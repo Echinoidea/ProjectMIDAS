@@ -65,13 +65,18 @@ studentViewTabUI <- function(id, uploadedData) {
             )
           ),
           
+          
           # ---- SAEBERS SCORE BOXES AND PLOTS ----
+          
+          # This row contains 2 columns which both contain a vertical layout 
+          # consisting of the SAEBERS scores and boxes containing plots below
           fluidRow(
+            # SAEBERS-TRS/SRS scores and plots
             column(
               6,
               verticalLayout(
                 box(
-                  title = "SAEBRS-TRS",
+                  title = "SAEBRS-TRS/SRS",
                   fluidRow(
                     valueBoxOutput(NS(id, "trsTotalBox"), width = 12)
                   ),
@@ -82,8 +87,10 @@ studentViewTabUI <- function(id, uploadedData) {
                   ),
                   width = 12
                 ),
-                # SAEBRS-TRS barplot
+                
+                # SAEBRS-TRS/SRS plot box
                 box(
+                  id = NS(id, "trsSaebersPlotBox"),
                   tabsetPanel(
                     id = NS(id, "trsTabset"),
                     
@@ -99,8 +106,10 @@ studentViewTabUI <- function(id, uploadedData) {
                       plotOutput(NS(id, "trsDensityPlot"))
                     )
                   ),
-                  title = "SAEBERS-TRS/SRS Total Score Distribution",
+                  title = textOutput(outputId = NS(id, "trsPlotBoxTitle")),
                   width = 12,
+                  
+                  # Drop down menu to select which SAEBERS score to plot
                   dropdownMenu = boxDropdown(
                     boxDropdownItem(id = NS(id, "trsDropdownTotal"),
                                     "Total"),
@@ -114,6 +123,7 @@ studentViewTabUI <- function(id, uploadedData) {
                 )
               )
             ),
+            
             # MySAEBRS
             column(
               6,
@@ -132,6 +142,7 @@ studentViewTabUI <- function(id, uploadedData) {
                 ),
                 # SAEBRS-TRS barplot
                 box(
+                  id = NS(id, "mySaebersPlotBox"),
                   tabsetPanel(
                     id = NS(id, "myTabset"),
                     
@@ -147,8 +158,13 @@ studentViewTabUI <- function(id, uploadedData) {
                       plotOutput(NS(id, "myDensityPlot"))
                     )
                   ),
-                  title = "MySAEBRS Total Score Distribution",
+                  
+                  # textOutput for the title so it can be dynamically changed
+                  # when the user changes which SAEBERS score to display.
+                  title = textOutput(outputId = NS(id, "myPlotBoxTitle")),
                   width = 12,
+                  
+                  # Drop down menu to select which SAEBERS score to plot
                   dropdownMenu = boxDropdown(
                     boxDropdownItem(id = NS(id, "myDropdownTotal"),
                                     "Total"),
@@ -195,7 +211,9 @@ studentViewTabServer <- function(id, uploadedData) {
     
     selectedMyDropdown <- reactiveVal("default")  # Which MySAEBERS score to plot
     selectedTrsDropdown <- reactiveVal("default") # which SAEBERS-TRS/SRS score to plot
-
+    
+    output$myPlotBoxTitle <- renderText({"MySAEBERS TOTAL Behavior Distribution"})
+    output$trsPlotBoxTitle <- renderText({"SAEBERS-TRS/SRS TOTAL Behavior Distribution"})
     
     # ---- EVENT OBSERVERS ----
     
@@ -208,25 +226,29 @@ studentViewTabServer <- function(id, uploadedData) {
     })
     
     
-    # Observe dropdown for MySAEBERS plot box
+    # Observe drop down for MySAEBERS plot box
     
     observeEvent(input$myDropdownTotal, {
-      showNotification("Viewing MySAEBERS total scores", duration = 3, type = "message")
+      showNotification("Viewing MySAEBERS total score", duration = 2, type = "message")
+      output$myPlotBoxTitle <- renderText({"MySAEBERS TOTAL Behavior Score"})
       selectedMyDropdown("total")
     })
     
     observeEvent(input$myDropdownSocial, {
-      showNotification("SOCIAL", duration = 1, type = "message")
+      showNotification("Viewing MySAEBERS social score", duration = 2, type = "message")
+      output$myPlotBoxTitle <- renderText({"MySAEBERS SOCIAL Behavior Score"})
       selectedMyDropdown("social")
     })
     
     observeEvent(input$myDropdownAcademic, {
-      showNotification("ACADEMIC", duration = 1, type = "message")
+      showNotification("Viewing MySAEBERS academic score", duration = 2, type = "message")
+      output$myPlotBoxTitle <- renderText({"MySAEBERS ACADEMIC Behavior Score"})
       selectedMyDropdown("academic")
     })
     
     observeEvent(input$myDropdownEmotional, {
-      showNotification("EMOTIONAL", duration = 1, type = "message")
+      showNotification("Viewing MySAEBERS emotional score", duration = 2, type = "message")
+      output$myPlotBoxTitle <- renderText({"MySAEBERS EMOTIONAL Behavior Score"})
       selectedMyDropdown("emotional")
     })
     
@@ -234,22 +256,26 @@ studentViewTabServer <- function(id, uploadedData) {
     # Observe dropdown for TRS-SAEBERS plot box
     
     observeEvent(input$trsDropdownTotal, {
-      showNotification("Viewing SAEBERS-TRS/SRS total scores", duration = 3, type = "message")
+      showNotification("Viewing SAEBERS-TRS/SRS total score", duration = 2, type = "message")
+      output$trsPlotBoxTitle <- renderText({"SAEBERS-TRS/SRS TOTAL Behavior Score"})
       selectedTrsDropdown("total")
     })
     
     observeEvent(input$trsDropdownSocial, {
-      showNotification("SOCIAL", duration = 1, type = "message")
+      showNotification("Viewing SAEBERS-TRS/SRS social score", duration = 2, type = "message")
+      output$trsPlotBoxTitle <- renderText({"SAEBERS-TRS/SRS SOCIAL Behavior Score"})
       selectedTrsDropdown("social")
     })
     
     observeEvent(input$trsDropdownAcademic, {
-      showNotification("ACADEMIC", duration = 1, type = "message")
+      showNotification("Viewing SAEBERS-TRS/SRS academic score", duration = 2, type = "message")
+      output$trsPlotBoxTitle <- renderText({"SAEBERS-TRS/SRS ACADEMIC Behavior Score"})
       selectedTrsDropdown("academic")
     })
     
     observeEvent(input$trsDropdownEmotional, {
-      showNotification("EMOTIONAL", duration = 1, type = "message")
+      showNotification("Viewing SAEBERS-TRS/SRS emotional score", duration = 2, type = "message")
+      output$trsPlotBoxTitle <- renderText({"SAEBERS-TRS/SRS EMOTIONAL Behavior Score"})
       selectedTrsDropdown("emotional")
     })
 
@@ -591,12 +617,14 @@ studentViewTabServer <- function(id, uploadedData) {
       xlim(0, 60) +
       ylim(-1, 1) +
       labs(title = "",
-           x = "mySAEBERS Total Behavior Score",
+           x = "",
            y = "") +
       theme_bw() +
       theme(
         legend.position = "none",
         title = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
         axis.text.y = element_blank(),
         axis.ticks.y = element_blank()
       )
@@ -624,12 +652,14 @@ studentViewTabServer <- function(id, uploadedData) {
       xlim(0, 20) +
       ylim(-1, 1) +
       labs(title = "",
-           x = "mySAEBERS Social Behavior Score",
+           x = "",
            y = "") +
       theme_bw() +
       theme(
         legend.position = "none",
         title = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
         axis.text.y = element_blank(),
         axis.ticks.y = element_blank()
       )
@@ -657,12 +687,14 @@ studentViewTabServer <- function(id, uploadedData) {
         xlim(0, 20) +
         ylim(-1, 1) +
         labs(title = "",
-             x = "mySAEBERS Academic Behavior Score",
+             x = "",
              y = "") +
         theme_bw() +
         theme(
           legend.position = "none",
           title = element_blank(),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
           axis.text.y = element_blank(),
           axis.ticks.y = element_blank()
         )
@@ -690,12 +722,14 @@ studentViewTabServer <- function(id, uploadedData) {
         xlim(0, 21) +
         ylim(-1, 1) +
         labs(title = "",
-             x = "mySAEBERS Emotional Behavior Score",
+             x = "",
              y = "") +
         theme_bw() +
         theme(
           legend.position = "none",
           title = element_blank(),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
           axis.text.y = element_blank(),
           axis.ticks.y = element_blank()
         )
