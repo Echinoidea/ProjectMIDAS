@@ -215,6 +215,7 @@ studentViewTabServer <- function(id, uploadedData) {
     output$myPlotBoxTitle <- renderText({"MySAEBERS TOTAL Behavior Distribution"})
     output$trsPlotBoxTitle <- renderText({"SAEBERS-TRS/SRS TOTAL Behavior Distribution"})
     
+    
     # ---- EVENT OBSERVERS ----
     
     observeEvent(input$btnStudentID, {
@@ -448,7 +449,7 @@ studentViewTabServer <- function(id, uploadedData) {
       }
       else {
         if (is.null(searchID())) {
-          return(myTotalDenityPlotDefault())
+          return(myTotalDensityPlotDefault())
         }
         else {
           return(myTotalDensityPlot())
@@ -596,81 +597,100 @@ studentViewTabServer <- function(id, uploadedData) {
     # ---- MySAEBERS BOX PLOTS ----
     
     # TOTAL BOXPLOT
-    myTotalBoxPlot <- reactive({ggplot(uploadedData(), aes(x = totalBehavior, y = 0)) +
-      # Geom layer - Boxplot, point, and label
-      geom_boxplot(width = 0.3) +
-      geom_point(aes(x = selectedStudent$data$totalBehavior, y = 0), color = "#FB8072") +
-      geom_text(aes(label = ..x.., x = selectedStudent$data$totalBehavior, y = 0), vjust = -3.1, color = "#FB8072", size = 5) +
-      
-      # Stat summary to label min, Q1, Q2, Q3, and max
-      stat_summary(
-        geom = "text",
-        fun = quantile, #function(x) boxplot.stats(x)$stats,
-        aes(label = ..x.., y = 0),
-        position = position_nudge(y = -0.25),
-        size = 4,
-        color = "#FB8072",
-        orientation = "y"
-      ) +
-      
-      # Visuals
-      xlim(0, 60) +
-      ylim(-1, 1) +
-      labs(title = "",
-           x = "",
-           y = "") +
-      theme_bw() +
-      theme(
-        legend.position = "none",
-        title = element_blank(),
-        axis.title.x = element_blank(),
-        axis.title.y = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank()
-      )
+    myTotalBoxPlot <- reactive({
+      ggplot(uploadedData(), aes(x = totalBehavior, y = 0)) +
+        # Geom layer - Boxplot, point, and label
+        geom_boxplot(width = 0.3) +
+        
+        # In-line conditional to check if there is any selected searchID, if not,
+        # don't add the geom_point or geom_text because it would throw an error.
+        # This is so there is never a weird empty box with a message where a plot
+        # should be.
+        {if (is.null(searchID()) == FALSE) 
+          list(
+            geom_point(aes(x = selectedStudent$data$totalBehavior, y = 0), color = "#FB8072"),
+            geom_text(aes(label = ..x.., x = selectedStudent$data$totalBehavior, y = 0), vjust = -3.1, color = "#FB8072", size = 5)
+        )} +
+        
+        # Stat summary to label min, Q1, Q2, Q3, and max
+        stat_summary(
+          geom = "text",
+          fun = quantile, #function(x) boxplot.stats(x)$stats,
+          aes(label = ..x.., y = 0),
+          position = position_nudge(y = -0.25),
+          size = 4,
+          color = "#FB8072",
+          orientation = "y"
+        ) +
+        
+        # Visuals
+        xlim(0, 60) +
+        ylim(-1, 1) +
+        labs(title = "",
+             x = "",
+             y = "") +
+        theme_bw() +
+        theme(
+          legend.position = "none",
+          title = element_blank(),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          axis.text.y = element_blank(),
+          axis.ticks.y = element_blank()
+        )
     })
     
     # SOCIAL BOXPLOT
-    mySocialBoxPlot <- reactive({ggplot(uploadedData(), aes(x = socialBehavior, y = 0)) +
-      # Geom layer - Boxplot, point, and label
-      geom_boxplot(width = 0.3) +
-      geom_point(aes(x = selectedStudent$data$socialBehavior, y = 0), color = "#80B1D3") +
-      geom_text(aes(label = ..x.., x = selectedStudent$data$socialBehavior, y = 0), vjust = -3.1, color = "#80B1D3", size = 5) +
-      
-      # Stat summary to label min, Q1, Q2, Q3, and max
-      stat_summary(
-        geom = "text",
-        fun = quantile, #function(x) boxplot.stats(x)$stats,
-        aes(label = ..x.., y = 0),
-        position = position_nudge(y = -0.25),
-        size = 4,
-        color = "#80B1D3",
-        orientation = "y"
-      ) +
-      
-      # Visuals
-      xlim(0, 20) +
-      ylim(-1, 1) +
-      labs(title = "",
-           x = "",
-           y = "") +
-      theme_bw() +
-      theme(
-        legend.position = "none",
-        title = element_blank(),
-        axis.title.x = element_blank(),
-        axis.title.y = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank()
-      )
+    mySocialBoxPlot <- reactive({
+      ggplot(uploadedData(), aes(x = socialBehavior, y = 0)) +
+        # Geom layer - Boxplot, point, and label
+        geom_boxplot(width = 0.3) +
+        
+        {if (is.null(searchID()) == FALSE)
+          list(
+            geom_point(aes(x = selectedStudent$data$socialBehavior, y = 0), color = "#80B1D3"),
+            geom_text(aes(label = ..x.., x = selectedStudent$data$socialBehavior, y = 0), vjust = -3.1, color = "#80B1D3", size = 5)
+        )} +
+        
+        # Stat summary to label min, Q1, Q2, Q3, and max
+        stat_summary(
+          geom = "text",
+          fun = quantile, #function(x) boxplot.stats(x)$stats,
+          aes(label = ..x.., y = 0),
+          position = position_nudge(y = -0.25),
+          size = 4,
+          color = "#80B1D3",
+          orientation = "y"
+        ) +
+        
+        # Visuals
+        xlim(0, 20) +
+        ylim(-1, 1) +
+        labs(title = "",
+             x = "",
+             y = "") +
+        theme_bw() +
+        theme(
+          legend.position = "none",
+          title = element_blank(),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          axis.text.y = element_blank(),
+          axis.ticks.y = element_blank()
+        )
     })
     
     # ACADEMIC BOXPLOT
-    myAcademicBoxPlot <- reactive({ggplot(uploadedData(), aes(x = academicBehavior, y = 0)) +
+    myAcademicBoxPlot <- reactive({
+      ggplot(uploadedData(), aes(x = academicBehavior, y = 0)) +
         # Geom layer - Boxplot, point, and label
         geom_boxplot(width = 0.3) +
-        geom_point(aes(x = selectedStudent$data$academicBehavior, y = 0), color = "#41AB5D") +
-        geom_text(aes(label = ..x.., x = selectedStudent$data$academicBehavior, y = 0), vjust = -3.1, color = "#41AB5D", size = 5) +
+        
+        {if (is.null(searchID()) == FALSE)
+          list(
+            geom_point(aes(x = selectedStudent$data$academicBehavior, y = 0), color = "#41AB5D"),
+            geom_text(aes(label = ..x.., x = selectedStudent$data$academicBehavior, y = 0), vjust = -3.1, color = "#41AB5D", size = 5)
+        )} +
         
         # Stat summary to label min, Q1, Q2, Q3, and max
         stat_summary(
@@ -704,8 +724,12 @@ studentViewTabServer <- function(id, uploadedData) {
     myEmotionalBoxPlot <- reactive({ggplot(uploadedData(), aes(x = emotionalBehavior, y = 0)) +
         # Geom layer - Boxplot, point, and label
         geom_boxplot(width = 0.3) +
-        geom_point(aes(x = selectedStudent$data$emotionalBehavior, y = 0), color = "#BC80BD") +
-        geom_text(aes(label = ..x.., x = selectedStudent$data$emotionalBehavior, y = 0), vjust = -3.1, color = "#BC80BD", size = 5) +
+        
+        {if (is.null(searchID()) == FALSE)
+          list(
+            geom_point(aes(x = selectedStudent$data$emotionalBehavior, y = 0), color = "#BC80BD"),
+            geom_text(aes(label = ..x.., x = selectedStudent$data$emotionalBehavior, y = 0), vjust = -3.1, color = "#BC80BD", size = 5)
+        )} +
         
         # Stat summary to label min, Q1, Q2, Q3, and max
         stat_summary(
@@ -736,14 +760,19 @@ studentViewTabServer <- function(id, uploadedData) {
     })
     
     
+    
     # ---- MySAEBERS DENSITY PLOTS ----
     
     # TOTAL DENSITY
     myTotalDensityPlot <- reactive({ggplot(uploadedData(), aes(x = totalBehavior)) +
         # Geom layer - Density, vertical line, label
         geom_density(adjust = 0.5) +
-        geom_vline(xintercept = selectedStudent$data$totalBehavior, color = "#FB8072") +
-        geom_text(aes(x = selectedStudent$data$totalBehavior, y = 0.02, label = ..x..), hjust = -1.75, color = "#FB8072", size = 5) +
+        
+        {if (is.null(searchID()) == FALSE)
+          list(
+            geom_vline(xintercept = selectedStudent$data$totalBehavior, color = "#FB8072"),
+            geom_text(aes(x = selectedStudent$data$totalBehavior, y = 0.02, label = ..x..), hjust = -1.75, color = "#FB8072", size = 5) 
+        )} +
         
         #scale_y_continuous(labels = scales::percent) +
         xlim(0, 60) +
@@ -761,8 +790,12 @@ studentViewTabServer <- function(id, uploadedData) {
     mySocialDensityPlot <- reactive({ggplot(uploadedData(), aes(x = socialBehavior)) +
         # Geom layer - Density, vertical line, label
         geom_density(adjust = 0.5) +
-        geom_vline(xintercept = selectedStudent$data$socialBehavior, color = "#80B1D3") +
-        geom_text(aes(x = selectedStudent$data$socialBehavior, y = 0.02, label = ..x..), hjust = -1.75, color = "#80B1D3", size = 5) +
+        
+        {if (is.null(searchID()) == FALSE)
+          list(
+            geom_vline(xintercept = selectedStudent$data$socialBehavior, color = "#80B1D3"),
+            geom_text(aes(x = selectedStudent$data$socialBehavior, y = 0.02, label = ..x..), hjust = -1.75, color = "#80B1D3", size = 5) 
+        )} +
         
         #scale_y_continuous(labels = scales::percent) +
         xlim(0, 20) +
@@ -780,8 +813,12 @@ studentViewTabServer <- function(id, uploadedData) {
     myAcademicDensityPlot <- reactive({ggplot(uploadedData(), aes(x = academicBehavior)) +
         # Geom layer - Density, vertical line, label
         geom_density(adjust = 0.5) +
-        geom_vline(xintercept = selectedStudent$data$academicBehavior, color = "#41AB5D") +
-        geom_text(aes(x = selectedStudent$data$academicBehavior, y = 0.02, label = ..x..), hjust = -1.75, color = "#41AB5D", size = 5) +
+        
+        {if (is.null(searchID()) == FALSE)
+          list(
+            geom_vline(xintercept = selectedStudent$data$academicBehavior, color = "#41AB5D"),
+            geom_text(aes(x = selectedStudent$data$academicBehavior, y = 0.02, label = ..x..), hjust = -1.75, color = "#41AB5D", size = 5) 
+        )} +
         
         #scale_y_continuous(labels = scales::percent) +
         xlim(0, 20) +
@@ -799,8 +836,12 @@ studentViewTabServer <- function(id, uploadedData) {
     myEmotionalDensityPlot <- reactive({ggplot(uploadedData(), aes(x = emotionalBehavior)) +
         # Geom layer - Density, vertical line, label
         geom_density(adjust = 0.5) +
-        geom_vline(xintercept = selectedStudent$data$emotionalBehavior, color = "#BC80BD") +
-        geom_text(aes(x = selectedStudent$data$emotionalBehavior, y = 0.02, label = ..x..), hjust = -1.75, color = "#BC80BD", size = 5) +
+        
+        {if (is.null(searchID()) == FALSE)
+          list(
+            geom_vline(xintercept = selectedStudent$data$emotionalBehavior, color = "#BC80BD"),
+            geom_text(aes(x = selectedStudent$data$emotionalBehavior, y = 0.02, label = ..x..), hjust = -1.75, color = "#BC80BD", size = 5)
+        )} +
         
         #scale_y_continuous(labels = scales::percent) +
         xlim(0, 21) +
@@ -821,8 +862,12 @@ studentViewTabServer <- function(id, uploadedData) {
     trsTotalBoxPlot <- reactive({ggplot(uploadedData(), aes(x = trsTotalBehavior, y = 0)) +
         # Geom layer - Boxplot, point, and label
         geom_boxplot(width = 0.3) +
-        geom_point(aes(x = selectedStudent$data$trsTotalBehavior, y = 0), color = "#FB8072") +
-        geom_text(aes(label = ..x.., x = selectedStudent$data$trsTotalBehavior, y = 0), vjust = -3.1, color = "#FB8072", size = 5) +
+        
+        {if (is.null(searchID()) == FALSE)
+          list(
+            geom_point(aes(x = selectedStudent$data$trsTotalBehavior, y = 0), color = "#FB8072"),
+            geom_text(aes(label = ..x.., x = selectedStudent$data$trsTotalBehavior, y = 0), vjust = -3.1, color = "#FB8072", size = 5)
+        )} +
         
         # Stat summary to label min, Q1, Q2, Q3, and max
         stat_summary(
@@ -854,8 +899,12 @@ studentViewTabServer <- function(id, uploadedData) {
     trsSocialBoxPlot <- reactive({ggplot(uploadedData(), aes(x = trsSocialBehavior, y = 0)) +
         # Geom layer - Boxplot, point, and label
         geom_boxplot(width = 0.3) +
-        geom_point(aes(x = selectedStudent$data$trsSocialBehavior, y = 0), color = "#80B1D3") +
-        geom_text(aes(label = ..x.., x = selectedStudent$data$trsSocialBehavior, y = 0), vjust = -3.1, color = "#80B1D3", size = 5) +
+        
+        {if (is.null(searchID()) == FALSE)
+          list(
+            geom_point(aes(x = selectedStudent$data$trsSocialBehavior, y = 0), color = "#80B1D3"),
+            geom_text(aes(label = ..x.., x = selectedStudent$data$trsSocialBehavior, y = 0), vjust = -3.1, color = "#80B1D3", size = 5)
+        )} +
         
         # Stat summary to label min, Q1, Q2, Q3, and max
         stat_summary(
@@ -887,8 +936,12 @@ studentViewTabServer <- function(id, uploadedData) {
     trsAcademicBoxPlot <- reactive({ggplot(uploadedData(), aes(x = trsAcademicBehavior, y = 0)) +
         # Geom layer - Boxplot, point, and label
         geom_boxplot(width = 0.3) +
-        geom_point(aes(x = selectedStudent$data$trsAcademicBehavior, y = 0), color = "#41AB5D") +
-        geom_text(aes(label = ..x.., x = selectedStudent$data$trsAcademicBehavior, y = 0), vjust = -3.1, color = "#41AB5D", size = 5) +
+        
+        {if (is.null(searchID()) == FALSE)
+          list(
+            geom_point(aes(x = selectedStudent$data$trsAcademicBehavior, y = 0), color = "#41AB5D"),
+            geom_text(aes(label = ..x.., x = selectedStudent$data$trsAcademicBehavior, y = 0), vjust = -3.1, color = "#41AB5D", size = 5)
+        )} +
         
         # Stat summary to label min, Q1, Q2, Q3, and max
         stat_summary(
@@ -920,8 +973,12 @@ studentViewTabServer <- function(id, uploadedData) {
     trsEmotionalBoxPlot <- reactive({ggplot(uploadedData(), aes(x = trsEmotionalBehavior, y = 0)) +
         # Geom layer - Boxplot, point, and label
         geom_boxplot(width = 0.3) +
-        geom_point(aes(x = selectedStudent$data$trsEmotionalBehavior, y = 0), color = "#BC80BD") +
-        geom_text(aes(label = ..x.., x = selectedStudent$data$trsEmotionalBehavior, y = 0), vjust = -3.1, color = "#BC80BD", size = 5) +
+        
+        {if (is.null(searchID()) == FALSE)
+          list(
+            geom_point(aes(x = selectedStudent$data$trsEmotionalBehavior, y = 0), color = "#BC80BD"),
+            geom_text(aes(label = ..x.., x = selectedStudent$data$trsEmotionalBehavior, y = 0), vjust = -3.1, color = "#BC80BD", size = 5)
+        )} +
         
         # Stat summary to label min, Q1, Q2, Q3, and max
         stat_summary(
@@ -950,14 +1007,19 @@ studentViewTabServer <- function(id, uploadedData) {
     })
     
     
+    
     # ---- SAEBERS-TRS/SRS DENSITY PLOTS ----
     
     # TOTAL DENSITY
     trsTotalDensityPlot <- reactive({ggplot(uploadedData(), aes(x = trsTotalBehavior)) +
         # Geom layer - Density, vertical line, label
         geom_density(adjust = 0.5) +
-        geom_vline(xintercept = selectedStudent$data$trsTotalBehavior, color = "#FB8072") +
-        geom_text(aes(x = selectedStudent$data$trsTotalBehavior, y = 0.02, label = ..x..), hjust = -1.75, color = "#FB8072", size = 5) +
+        
+        {if (is.null(searchID()) == FALSE)
+          list(
+            geom_vline(xintercept = selectedStudent$data$trsTotalBehavior, color = "#FB8072"),
+            geom_text(aes(x = selectedStudent$data$trsTotalBehavior, y = 0.02, label = ..x..), hjust = -1.75, color = "#FB8072", size = 5)
+        )} +
         
         #scale_y_continuous(labels = scales::percent) +
         xlim(0, 60) +
@@ -975,8 +1037,12 @@ studentViewTabServer <- function(id, uploadedData) {
     trsSocialDensityPlot <- reactive({ggplot(uploadedData(), aes(x = trsSocialBehavior)) +
         # Geom layer - Density, vertical line, label
         geom_density(adjust = 0.5) +
-        geom_vline(xintercept = selectedStudent$data$socialBehavior, color = "#80B1D3") +
-        geom_text(aes(x = selectedStudent$data$socialBehavior, y = 0.02, label = ..x..), hjust = -1.75, color = "#80B1D3", size = 5) +
+        
+        {if (is.null(searchID()) == FALSE)
+          list(
+            geom_vline(xintercept = selectedStudent$data$trsSocialBehavior, color = "#80B1D3"),
+            geom_text(aes(x = selectedStudent$data$trsSocialBehavior, y = 0.02, label = ..x..), hjust = -1.75, color = "#80B1D3", size = 5)
+        )} +
         
         #scale_y_continuous(labels = scales::percent) +
         xlim(0, 20) +
@@ -994,8 +1060,12 @@ studentViewTabServer <- function(id, uploadedData) {
     trsAcademicDensityPlot <- reactive({ggplot(uploadedData(), aes(x = trsAcademicBehavior)) +
         # Geom layer - Density, vertical line, label
         geom_density(adjust = 0.5) +
-        geom_vline(xintercept = selectedStudent$data$trsAcademicBehavior, color = "#41AB5D") +
-        geom_text(aes(x = selectedStudent$data$trsAcademicBehavior, y = 0.02, label = ..x..), hjust = -1.75, color = "#41AB5D", size = 5) +
+        
+        {if (is.null(searchID()) == FALSE)
+          list(
+            geom_vline(xintercept = selectedStudent$data$trsAcademicBehavior, color = "#41AB5D"),
+            geom_text(aes(x = selectedStudent$data$trsAcademicBehavior, y = 0.02, label = ..x..), hjust = -1.75, color = "#41AB5D", size = 5)
+        )} +
         
         #scale_y_continuous(labels = scales::percent) +
         xlim(0, 20) +
@@ -1013,8 +1083,12 @@ studentViewTabServer <- function(id, uploadedData) {
     trsEmotionalDensityPlot <- reactive({ggplot(uploadedData(), aes(x = trsEmotionalBehavior)) +
         # Geom layer - Density, vertical line, label
         geom_density(adjust = 0.5) +
-        geom_vline(xintercept = selectedStudent$data$trsEmotionalBehavior, color = "#BC80BD") +
-        geom_text(aes(x = selectedStudent$data$trsEmotionalBehavior, y = 0.02, label = ..x..), hjust = -1.75, color = "#BC80BD", size = 5) +
+        
+        {if (is.null(searchID()) == FALSE)
+          list(
+            geom_vline(xintercept = selectedStudent$data$trsEmotionalBehavior, color = "#BC80BD"),
+            geom_text(aes(x = selectedStudent$data$trsEmotionalBehavior, y = 0.02, label = ..x..), hjust = -1.75, color = "#BC80BD", size = 5)
+        )} +
         
         #scale_y_continuous(labels = scales::percent) +
         xlim(0, 21) +
