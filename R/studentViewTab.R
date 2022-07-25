@@ -6,6 +6,7 @@ studentViewTabUI <- function(id, uploadedData) {
   ns <- NS(id)
   
   tabItem(tabName = "studentTab",
+          # ---- STUDENT INFORMATION ROW ----
           # Student ID, Demographics, and Test Score header box, divided into 6 columns
           fluidRow(
             # ID Search Box
@@ -64,8 +65,8 @@ studentViewTabUI <- function(id, uploadedData) {
             )
           ),
           
+          # ---- SAEBERS SCORE BOXES AND PLOTS ----
           fluidRow(
-            # SAEBRS-TRS
             column(
               6,
               verticalLayout(
@@ -83,8 +84,22 @@ studentViewTabUI <- function(id, uploadedData) {
                 ),
                 # SAEBRS-TRS barplot
                 box(
-                  title = "TRS-TOTAL Average Score",
-                  plotOutput(NS(id, "trsTotalBar")),
+                  tabsetPanel(
+                    id = NS(id, "trsTabset"),
+                    
+                    tabPanel(
+                      id = NS(id, "trsBoxPlotTab"),
+                      "Box Plot",
+                      plotOutput(NS(id, "trsBoxPlot"))
+                    ),
+                    
+                    tabPanel(
+                      id = NS(id, "trsDensityPlotTab"),
+                      "Density",
+                      plotOutput(NS(id, "trsDensityPlot"))
+                    )
+                  ),
+                  title = "SAEBERS-TRS/SRS Total Score Distribution",
                   width = 12
                 )
               )
@@ -107,8 +122,22 @@ studentViewTabUI <- function(id, uploadedData) {
                 ),
                 # SAEBRS-TRS barplot
                 box(
-                  title = "MySAEBRS - Total Score Distribution",
-                  plotOutput(NS(id, "myTotalBar")),
+                  tabsetPanel(
+                    id = NS(id, "myTabset"),
+                    
+                    tabPanel(
+                      id = NS(id, "myBoxPlotTab"),
+                      "Box Plot",
+                      plotOutput(NS(id, "myBoxPlot"))
+                    ),
+                    
+                    tabPanel(
+                      id = NS(id, "myDensityPlotTab"),
+                      "Density",
+                      plotOutput(NS(id, "myDensityPlot"))
+                    )
+                  ),
+                  title = "MySAEBRS Total Score Distribution",
                   width = 12
                 )
               )
@@ -232,66 +261,16 @@ studentViewTabServer <- function(id, uploadedData) {
       )
     })
     
-    # output$socialTRS <- renderText({
-    #   selectedStudent$data$trsSocialBehavior
-    # })
-    # 
-    # output$academicTRS <- renderText({
-    #   selectedStudent$data$trsAcademicBehavior
-    # })
-    # 
-    # output$emotionalTRS <- renderText({
-    #   selectedStudent$data$trsEmotionalBehavior
-    # })
-    # 
-    # output$socialSAEBRS <- renderText({
-    #   selectedStudent$data$socialBehavior
-    # })
-    # 
-    # output$academicSAEBRS <- renderText({
-    #   selectedStudent$data$academicBehavior
-    # })
-    # 
-    # output$emotionalSAEBRS <- renderText({
-    #   selectedStudent$data$emotionalBehavior
-    # })
-      # 
-      # #School-wide TRS bargraph outputs
-    # output$trsTotalBar <- renderPlot({
-    #   df_abrange <- uploadedData() %>% 
-    #     mutate(ranges = cut(academicBehavior, c(-1, 6, 9, Inf))) %>%
-    #     group_by(ranges) %>% 
-    #     tally() %>% 
-    #     as.data.frame()
-    #   
-    #   df_abrange
-    #   
-    #   ggplot(df_abrange, aes(x = ranges, y = n)) +
-    #     geom_bar(stat = 'identity', aes(fill=ranges)) +
-    #     geom_text(aes(label = n),
-    #               position = position_dodge(width=0.9),
-    #               vjust = -0.25) +
-    #     labs(title = "", 
-    #          x = "Risk Levels", 
-    #          y = "Number of Students") +
-    #     scale_x_discrete(labels=c("High Risk", "Some Risk", "Low Risk")) +
-    #     scale_fill_manual(values = c("#FB8072", "#BEBADA", "#80B1D3")) +
-    #     theme_hc() +
-    #     theme(legend.position = "none", title = element_blank())
-    # }, bg="transparent")
     
     
-    output$myTotalBar <- renderPlot({
-      
+    output$myBoxPlot <- renderPlot({
       df <- uploadedData()
       
-      # MySAEBERS box plot
-      
-      myTotalBoxplot <- ggplot(df, aes(x = totalBehavior, y = 0)) +
+      myTotalBoxPlot <- ggplot(df, aes(x = totalBehavior, y = 0)) +
         # Geom layer - Boxplot, point, and label
         geom_boxplot(width = 0.3) +
         geom_point(aes(x = selectedStudent$data$totalBehavior, y = 0), color = "#FB8072") +
-        geom_text(aes(label = ..x.., x = selectedStudent$data$totalBehavior, y = 0), vjust = -3.1, color = "#FB8072") +
+        geom_text(aes(label = ..x.., x = selectedStudent$data$totalBehavior, y = 0), vjust = -3.1, color = "#FB8072", size = 5) +
         
         # Stat summary to label min, Q1, Q2, Q3, and max
         stat_summary(
@@ -299,7 +278,7 @@ studentViewTabServer <- function(id, uploadedData) {
           fun = quantile, #function(x) boxplot.stats(x)$stats,
           aes(label = ..x.., y = 0),
           position = position_nudge(y = -0.25),
-          size = 3,
+          size = 4,
           color = "#FB8072",
           orientation = "y"
         ) +
@@ -318,14 +297,18 @@ studentViewTabServer <- function(id, uploadedData) {
           axis.ticks.y = element_blank()
         )
       
-      
-      # mySAEBERS line density plot
+      myTotalBoxPlot
+    })
+    
+    
+    output$myDensityPlot <- renderPlot({
+      df <- uploadedData()
       
       myTotalDensity <- ggplot(df, aes(x = totalBehavior)) +
         # Geom layer - Density, vertical line, label
         geom_density(adjust = 0.5) +
-        geom_vline(xintercept = selectedStudent$data$totalBehavior) +
-        geom_text(aes(x = selectedStudent$data$totalBehavior, y = 1, label = ..x..)) +
+        geom_vline(xintercept = selectedStudent$data$totalBehavior, color = "#FB8072") +
+        geom_text(aes(x = selectedStudent$data$totalBehavior, y = 0.02, label = ..x..), hjust = -1.75, color = "#FB8072", size = 5) +
         
         #scale_y_continuous(labels = scales::percent) +
         xlim(0, 60) +
@@ -338,18 +321,18 @@ studentViewTabServer <- function(id, uploadedData) {
           title = element_blank(),
         )
       
-      myTotalBoxplot
+      myTotalDensity
     })
     
     
-    output$trsTotalBar <- renderPlot({
+    output$trsBoxPlot <- renderPlot({
       df <- uploadedData()
       
-      trsTotalBoxplot <- ggplot(df, aes(x = trsTotalBehavior, y = 0)) +
+      trsTotalBoxPlot <- ggplot(df, aes(x = trsTotalBehavior, y = 0)) +
         # Geom layer - Boxplot, point, and label
         geom_boxplot(width = 0.3) +
         geom_point(aes(x = selectedStudent$data$trsTotalBehavior, y = 0), color = "#FB8072") +
-        geom_text(aes(label = ..x.., x = selectedStudent$data$trsTotalBehavior, y = 0), vjust = -3.1, color = "#FB8072") +
+        geom_text(aes(label = ..x.., x = selectedStudent$data$trsTotalBehavior, y = 0), vjust = -3.1, color = "#FB8072", size = 5) +
         
         # Stat summary to label min, Q1, Q2, Q3, and max
         stat_summary(
@@ -357,7 +340,7 @@ studentViewTabServer <- function(id, uploadedData) {
           fun = quantile, #function(x) boxplot.stats(x)$stats,
           aes(label = ..x.., y = 0),
           position = position_nudge(y = -0.25),
-          size = 3,
+          size = 4,
           color = "#FB8072",
           orientation = "y"
         ) +
@@ -376,12 +359,18 @@ studentViewTabServer <- function(id, uploadedData) {
           axis.ticks.y = element_blank()
         )
       
+      trsTotalBoxPlot
+    })
+    
+    
+    output$trsDensityPlot <- renderPlot({
+      df <- uploadedData()
       
-      trsTotalLineDist <- ggplot(df, aes(x = trsTotalBehavior)) +
+      trsTotalDensity <- ggplot(df, aes(x = trsTotalBehavior)) +
         # Geom layer - Density, vertical line, label
         geom_density(adjust = 0.5) +
-        geom_vline(xintercept = selectedStudent$data$trsTotalBehavior) +
-        geom_text(aes(x = selectedStudent$data$trsTotalBehavior, y = 1, label = ..x..)) +
+        geom_vline(xintercept = selectedStudent$data$trsTotalBehavior, color = "#FB8072") +
+        geom_text(aes(x = selectedStudent$data$trsTotalBehavior, y = 0.02, label = ..x..), hjust = -1.75, color = "#FB8072", size = 5) +
         
         # Visuals
         #scale_y_continuous(labels = scales::percent) +
@@ -395,31 +384,9 @@ studentViewTabServer <- function(id, uploadedData) {
           title = element_blank(),
         )
       
-      trsTotalBoxplot
+      trsTotalDensity
     })
     
     # Add option to see density and boxplot
-
-    # output$myTotalBar <- renderPlot({
-    #   df_tbrange <- uploadedData() %>%
-    #     mutate(ranges = cut(totalBehavior, c(-1, 24, 37, Inf))) %>%
-    #     group_by(ranges) %>% 
-    #     tally() %>% 
-    #     as.data.frame()
-    #   
-    #   ggplot(df_tbrange, aes(x = ranges, y = n)) +
-    #     geom_bar(stat = 'identity', aes(fill = ranges)) +
-    #     geom_text(aes(label = n),
-    #               position = position_dodge(width=0.9),
-    #               vjust=-0.25) +
-    #     
-    #     labs(title = "",
-    #          x = "Risk Levels",
-    #          y = "Number of Students") +
-    #     scale_x_discrete(labels=c("High Risk", "Some Risk", "Low Risk")) +
-    #     scale_fill_manual(values = c("#FB8072", "#BEBADA", "#80B1D3")) +
-    #     theme_hc() +
-    #     theme(legend.position = "none", title = element_blank())
-    # })
   })
 }
