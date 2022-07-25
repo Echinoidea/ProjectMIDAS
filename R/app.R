@@ -39,59 +39,22 @@ midasApp <- function() {
     ),
     
     dashboardBody(shinyjs::useShinyjs(),
-                  #skin = "green",
-        # tags$head(
-        #   includeCSS("www/css.css")
-        # ),
-        # 
-        # tags$style(HTML('body {font-family:"Poppins"}')),
-        # #color the body
-        # tags$head(tags$style(HTML('
-        # /* logo */
-        # .skin-blue .main-header .logo {
-        #                       background-color: #CCEBC5;
-        #                       }
-        # 
-        # /* logo when hovered */
-        # .skin-blue .main-header .logo:hover {
-        #                       background-color: #bddbb6;
-        #                       }
-        # 
-        # /* navbar (rest of the header) */
-        # .skin-blue .main-header .navbar {
-        #                       background-color: #CCEBC5;
-        #                       }
-        # /* main sidebar */
-        # .skin-blue .main-sidebar {
-        #                       background-color: #CCEBC5;
-        #                       }
-        # 
-        # /* active selected tab in the sidebarmenu */
-        # .skin-blue .main-sidebar .sidebar .sidebar-menu .active a{
-        #                       background-color: #bddbb6;
-        #                       }
-        # 
-        # /* other links in the sidebarmenu */
-        # .skin-blue .main-sidebar .sidebar .sidebar-menu a{
-        #                       background-color: #CCEBC5;
-        #                       color: black;
-        #                       }
-        # 
-        # /* other links in the sidebarmenu when hovered */
-        #  .skin-blue .main-sidebar .sidebar .sidebar-menu a:hover{
-        #                       background-color: #A8DDB5;
-        #                       }
-        # /* toggle button when hovered  */
-        #  .skin-blue .main-header .navbar .sidebar-toggle:hover{
-        #                       background-color: #A8DDB5;
-        #  }
-        # /* body */
-        # .content-wrapper, .right-side {
-        #                         background-color: #FFFFFF;
-        #                         }
-        #                       '))),
-      
-        
+        # Edit CSS elements here
+        tags$head(tags$style(HTML(
+          '/* CSS for the dropdown buttons on studentViewTab plot boxes */
+          .dropdown-toggle {
+            visibility: hidden;
+          }
+          
+          .dropdown-toggle:after {
+            content: "Select SAEBERS Score";
+            border: 2px solid Gainsboro;
+            border-radius: 4px;
+            text-align: center;
+            padding: 0.75em 1em;
+            visibility: visible;
+          }'
+        ))),
         
       fluidPage(
         tabItems(

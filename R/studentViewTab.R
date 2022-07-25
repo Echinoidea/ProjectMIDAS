@@ -166,6 +166,10 @@ studentViewTabUI <- function(id, uploadedData) {
           )
 }
 
+# <button type="button" data-toggle="dropdown" class="btn btn-box-tool btn-sm dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+# <i class="fa fa-wrench" role="presentation" aria-label="wrench icon"></i>
+#   </button>
+
 studentViewTabServer <- function(id, uploadedData) {
   moduleServer(id, function(input, output, session) {
     
@@ -191,11 +195,7 @@ studentViewTabServer <- function(id, uploadedData) {
     
     selectedMyDropdown <- reactiveVal("default")  # Which MySAEBERS score to plot
     selectedTrsDropdown <- reactiveVal("default") # which SAEBERS-TRS/SRS score to plot
-    
-    # output$myBoxPlot <- renderPlot({myTotalBoxPlotDefault()})
-    # output$myDensityPlot <- renderPlot({myTotalDensityPlotDefault()})
-    # output$trsBoxPlot <- renderPlot({trsTotalBoxPlotDefault()})
-    # output$trsDensityPlot <- renderPlot({trsTotalDensityPlotDefault()})
+
     
     # ---- EVENT OBSERVERS ----
     
