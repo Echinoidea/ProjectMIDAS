@@ -189,8 +189,13 @@ studentViewTabServer <- function(id, uploadedData) {
     
     searchID <- reactiveVal()
     
-    selectedMyDropdown <- reactiveVal()  # Which MySAEBERS score to plot
-    selectedTrsDropdown <- reactiveVal() # which SAEBERS-TRS/SRS score to plot
+    selectedMyDropdown <- reactiveVal("default")  # Which MySAEBERS score to plot
+    selectedTrsDropdown <- reactiveVal("default") # which SAEBERS-TRS/SRS score to plot
+    
+    # output$myBoxPlot <- renderPlot({myTotalBoxPlotDefault()})
+    # output$myDensityPlot <- renderPlot({myTotalDensityPlotDefault()})
+    # output$trsBoxPlot <- renderPlot({trsTotalBoxPlotDefault()})
+    # output$trsDensityPlot <- renderPlot({trsTotalDensityPlotDefault()})
     
     # ---- EVENT OBSERVERS ----
     
@@ -355,6 +360,14 @@ studentViewTabServer <- function(id, uploadedData) {
       else if (selectedMyDropdown() == "emotional") {
         return(myEmotionalBoxPlot())
       }
+      else {
+        if (is.null(searchID())) {
+          return(myTotalBoxPlotDefault())
+        }
+        else {
+          return(myTotalBoxPlot())
+        }
+      }
     })
     
     output$myBoxPlot <- renderPlot({
@@ -376,6 +389,14 @@ studentViewTabServer <- function(id, uploadedData) {
       }
       else if (selectedTrsDropdown() == "emotional") {
         return(trsEmotionalBoxPlot())
+      }
+      else {
+        if (is.null(searchID())) {
+          return(trsTotalBoxPlotDefault())
+        }
+        else {
+          return(trsTotalBoxPlot())
+        }
       }
     })
     
@@ -399,6 +420,14 @@ studentViewTabServer <- function(id, uploadedData) {
       else if (selectedMyDropdown() == "emotional") {
         return(myEmotionalDensityPlot())
       }
+      else {
+        if (is.null(searchID())) {
+          return(myTotalDenityPlotDefault())
+        }
+        else {
+          return(myTotalDensityPlot())
+        }
+      }
     })
     
     output$myDensityPlot <- renderPlot({
@@ -421,10 +450,120 @@ studentViewTabServer <- function(id, uploadedData) {
       else if (selectedTrsDropdown() == "emotional") {
         return(trsEmotionalDensityPlot())
       }
+      else {
+        if (is.null(searchID())) {
+          return(trsTotalDensityPlotDefault())
+        }
+        else {
+          return(trsTotalDensityPlot())
+        }
+      }
     })
     
     output$trsDensityPlot <- renderPlot({
       selectedTrsDensityPlot()
+    })
+    
+    
+    # ---- DEFAULT BOX AND DENSITY PLOTS ----
+    myTotalBoxPlotDefault <- reactive({ggplot(uploadedData(), aes(x = totalBehavior, y = 0)) +
+        # Geom layer - Boxplot, point, and label
+        geom_boxplot(width = 0.3) +
+        # geom_point(aes(x = selectedStudent$data$totalBehavior, y = 0), color = "#FB8072") +
+        # geom_text(aes(label = ..x.., x = selectedStudent$data$totalBehavior, y = 0), vjust = -3.1, color = "#FB8072", size = 5) +
+        
+        # Stat summary to label min, Q1, Q2, Q3, and max
+        stat_summary(
+          geom = "text",
+          fun = quantile, #function(x) boxplot.stats(x)$stats,
+          aes(label = ..x.., y = 0),
+          position = position_nudge(y = -0.25),
+          size = 4,
+          color = "#FB8072",
+          orientation = "y"
+        ) +
+        
+        # Visuals
+        xlim(0, 60) +
+        ylim(-1, 1) +
+        labs(title = "",
+             x = "mySAEBERS Total Behavior Score",
+             y = "") +
+        theme_bw() +
+        theme(
+          legend.position = "none",
+          title = element_blank(),
+          axis.text.y = element_blank(),
+          axis.ticks.y = element_blank()
+        )
+    })
+    
+    myTotalDensityPlotDefault <- reactive({ggplot(uploadedData(), aes(x = totalBehavior)) +
+        # Geom layer - Density, vertical line, label
+        geom_density(adjust = 0.5) +
+        # geom_vline(xintercept = selectedStudent$data$totalBehavior, color = "#FB8072") +
+        # geom_text(aes(x = selectedStudent$data$totalBehavior, y = 0.02, label = ..x..), hjust = -1.75, color = "#FB8072", size = 5) +
+        
+        #scale_y_continuous(labels = scales::percent) +
+        xlim(0, 60) +
+        labs(title = "",
+             x = "mySAEBERS Total Behavior Score",
+             y = "Number of Students") +
+        theme_bw() +
+        theme(
+          legend.position = "none",
+          title = element_blank(),
+        )
+    })
+    
+    trsTotalBoxPlotDefault <- reactive({ggplot(uploadedData(), aes(x = trsTotalBehavior, y = 0)) +
+        # Geom layer - Boxplot, point, and label
+        geom_boxplot(width = 0.3) +
+        # geom_point(aes(x = selectedStudent$data$totalBehavior, y = 0), color = "#FB8072") +
+        # geom_text(aes(label = ..x.., x = selectedStudent$data$totalBehavior, y = 0), vjust = -3.1, color = "#FB8072", size = 5) +
+        
+        # Stat summary to label min, Q1, Q2, Q3, and max
+        stat_summary(
+          geom = "text",
+          fun = quantile, #function(x) boxplot.stats(x)$stats,
+          aes(label = ..x.., y = 0),
+          position = position_nudge(y = -0.25),
+          size = 4,
+          color = "#FB8072",
+          orientation = "y"
+        ) +
+        
+        # Visuals
+        xlim(0, 60) +
+        ylim(-1, 1) +
+        labs(title = "",
+             x = "mySAEBERS Total Behavior Score",
+             y = "") +
+        theme_bw() +
+        theme(
+          legend.position = "none",
+          title = element_blank(),
+          axis.text.y = element_blank(),
+          axis.ticks.y = element_blank()
+        )
+    })
+    
+    trsTotalDensityPlotDefault <- reactive({ggplot(uploadedData(), aes(x = trsTotalBehavior)) +
+        # Geom layer - Density, vertical line, label
+        geom_density(adjust = 0.5) +
+        # geom_vline(xintercept = selectedStudent$data$totalBehavior, color = "#FB8072") +
+        # geom_text(aes(x = selectedStudent$data$totalBehavior, y = 0.02, label = ..x..), hjust = -1.75, color = "#FB8072", size = 5) +
+        
+        #scale_y_continuous(labels = scales::percent) +
+        xlim(0, 60) +
+        labs(title = "",
+             x = "mySAEBERS Total Behavior Score",
+             y = "Number of Students") +
+        theme_bw() +
+        theme(
+          legend.position = "none",
+          title = element_blank(),
+        )
     })
     
     
