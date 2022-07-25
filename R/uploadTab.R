@@ -26,9 +26,7 @@ uploadTabUI <- function(id, label = "Upload Tab") {
                 "Some" = "some",
                 "High" = "high"
               )
-            ),
-            
-            actionButton(NS(id, "test"), "button")
+            )
           ))
           )
 }
@@ -54,12 +52,10 @@ uploadTabServer <- function(id) {
         )
       })
       
-      observeEvent(input$test, {
-        print("Test Upload File")
-        print(input$uploadFile)
-        print(uploadedData())
-      })
       
+      # Create reactive variable for the uploaded data and return at the end of 
+      # the function. This returned value will be passed into each server
+      # module in app.R to access the school data.
       data <- reactive({
         uploadedData()
       })

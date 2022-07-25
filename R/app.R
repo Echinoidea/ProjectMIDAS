@@ -114,7 +114,6 @@ midasApp <- function() {
   # Server -----
   server <- function(input, output) {
     uploadedData <- uploadTabServer("uploadTab")
-    # schoolTabServer("schoolTab")
     studentViewTabServer("studentViewTab", uploadedData)
     schoolTabServer("schoolTab", uploadedData)
     # classTabServer("classTab")
@@ -136,3 +135,6 @@ midasApp()
 # Color palette for accents
 # > RColorBrewer::brewer.pal(9, "Pastel1")
 # [1] "#FBB4AE" "#B3CDE3" "#CCEBC5" "#DECBE4" "#FED9A6" "#FFFFCC" "#E5D8BD" "#FDDAEC" "#F2F2F2"
+
+# > RColorBrewer::brewer.pal(9, "Greens")
+# [1] "#F7FCF5" "#E5F5E0" "#C7E9C0" "#A1D99B" "#74C476" "#41AB5D" "#238B45" "#006D2C" "#00441B"
