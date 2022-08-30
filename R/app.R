@@ -87,6 +87,7 @@ midasApp <- function() {
 }
 
 midasApp()
+
 # Color scheme for UI
 # > brewer.pal(9, "GnBu")
 # [1] "#F7FCF0" "#E0F3DB" "#CCEBC5" "#A8DDB5" "#7BCCC4" "#4EB3D3" "#2B8CBE" "#0868AC" "#084081"

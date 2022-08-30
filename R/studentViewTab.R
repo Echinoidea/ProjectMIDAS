@@ -7,8 +7,8 @@ studentViewTabUI <- function(id, uploadedData) {
   
   tabItem(tabName = "studentTab",
           # ---- STUDENT INFORMATION ROW ----
-          # Student ID, Demographics, and Test Score header box, divided into 6 columns
-          fluidRow(
+          # Student ID, Demographics, and Test Score header box, divided into 5 columns
+          splitLayout(
             # ID Search Box
             box(
               title = "Student ID#",
@@ -26,42 +26,35 @@ studentViewTabUI <- function(id, uploadedData) {
                 )
               ),
               
-              width = 2
+              width = 12
             ),
             
             # Grade box
             box(
               title = "Grade",
               textOutput(NS(id, "studentGrade")),
-              width = 2
+              width = 12
             ),
             
             # Gender box
             box(
               title = "Gender",
               textOutput(NS(id, "studentGender")),
-              width = 2
+              width = 12
             ),
             
             # Ethnicity box
             box(
               title = "Ethnicity",
               textOutput(NS(id, "studentEthnicity")),
-              width = 2
+              width = 12
             ),
             
             # Special Education Status box
             box(
               title = "Special Education",
               textOutput(NS(id, "studentSpecialEd")),
-              width = 2
-            ),
-            
-            # Test score box
-            box(
-              title = "Test Score",
-              textOutput(NS(id, "studentTestScore")),
-              width = 2
+              width = 12
             )
           ),
           
