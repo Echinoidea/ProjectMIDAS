@@ -8,6 +8,7 @@ library(dplyr)
 #library(tidyverse) #megapackage for analysis/operations
 library(readr) #library for taking in
 library(ggthemes)
+library(shinyBS)
 
 # Modular Shiny workflow:
 #   - Each R file (module) is essentially a standalone Shiny app, containing a ui
@@ -17,11 +18,12 @@ library(ggthemes)
 #   - Add a source() call in the main midasApp function for each module.
 
 midasApp <- function() {
-  source("./R/archiveTab.R")
-  # source("./R/classTab.R")
-  source("./R/schoolTab.R")
-  source("./R/studentViewTab.R")
   source("./R/uploadTab.R")
+  source("./R/studentViewTab.R")
+  source("./R/schoolTab.R")
+  source("./R/popDemographicsTab.R")
+  source("./R/popSaebersTab.R")
+  source("./R/popDataTab.R")
   
   ui <- dashboardPage(
     dashboardHeader(title = "Project MIDAS"),
@@ -29,12 +31,24 @@ midasApp <- function() {
     sidebar = dashboardSidebar(
       sidebarMenu(
         id = "tabs",
-        menuItem("Upload Data", tabName = "uploadTab"),
-        # menuItem("Dashboard", tabName = "Dashboard"),
-        menuItem("Student", tabName = "studentTab"),
-        # menuItem("Class", tabName = "classTab"),
-        menuItem("School", tabName = "schoolTab"),
-        menuItem("Archive", tabName = "archiveTab")
+        menuItem(text = "Upload Data", tabName = "uploadTab"),
+        menuItem(text = "Student", tabName = "studentTab"),
+        menuItem(
+          text = "School",
+          tabName = "schoolTab",
+          menuSubItem(
+            text = "Demographics",
+            tabName = "popDemographicsTab"
+          ),
+          menuSubItem(
+            text = "SAEBERS",
+            tabName = "popSaebersTab"
+          ),
+          menuSubItem(
+            text = "Data",
+            tabName = "popDataTab"
+          )
+        )
       )
     ),
     
@@ -60,15 +74,15 @@ midasApp <- function() {
         tabItems(
           # Upload - Uploading Data to be sent to Dashboard
           uploadTabUI("uploadTab"),
-          # # School - Displaying School Data from Upload
-          # schoolTabUI("schoolTab"),
-          # # # Student - Displaying student data
+          
+          # View individual students data
           studentViewTabUI("studentViewTab"),
+          
+          # School population tabs
           schoolTabUI("schoolTab"),
-          # # # Class - Displaying class data
-          # classTabUI("classTab"),
-          # # # Archive - under construction?
-          archiveTabUI("archiveTab")
+          popDemographicsTabUI("popDemographicsTab"),
+          popSaebersTabUI("popSaebersTab"),
+          popDataTabUI("popDataTab")
         )
         #end of tabs))
       ))
@@ -78,9 +92,11 @@ midasApp <- function() {
   server <- function(input, output) {
     uploadedData <- uploadTabServer("uploadTab")
     studentViewTabServer("studentViewTab", uploadedData)
+    
     schoolTabServer("schoolTab", uploadedData)
-    # classTabServer("classTab")
-    archiveTabServer("archiveTab", uploadedData)
+    popDemographicsTabServer("popDemographicsTab", uploadedData)
+    popSaebersTabServer("popSaebersTab", uploadedData)
+    popDataTabServer("popDataTab", uploadedData)
   }
   
   shinyApp(ui, server)
