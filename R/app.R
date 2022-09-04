@@ -9,6 +9,7 @@ library(dplyr)
 library(readr) #library for taking in
 library(ggthemes)
 library(shinyBS)
+library(plotly) # for ggplot tooltips
 
 # Modular Shiny workflow:
 #   - Each R file (module) is essentially a standalone Shiny app, containing a ui
@@ -117,3 +118,8 @@ midasApp()
 
 # > RColorBrewer::brewer.pal(9, "Greens")
 # [1] "#F7FCF5" "#E5F5E0" "#C7E9C0" "#A1D99B" "#74C476" "#41AB5D" "#238B45" "#006D2C" "#00441B"
+
+
+# New color scheme ?
+# 86E3CE • D0E6A5 • FFDD94 • FA897B • CCABD8
+# https://ro.pinterest.com/pin/345510602668902064/
