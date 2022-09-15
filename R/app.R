@@ -1,7 +1,6 @@
 library(shiny) #library for running Shiny Webapp
 library(shinyjs) #library for js functions
-library(shinydashboard) #dashboarding library
-library(shinydashboardPlus) # For additional shiny dashboard skins and other visuals
+
 library(readxl) #library for taking in XLS/XLSX
 library(ggplot2) #library for basic plots
 library(dplyr)
@@ -10,6 +9,9 @@ library(readr) #library for taking in
 library(ggthemes)
 library(shinyBS)
 library(plotly) # for ggplot tooltips
+library(flexdashboard)
+library(shinydashboard) #dashboarding library
+library(shinydashboardPlus) # For additional shiny dashboard skins and other visuals
 
 # Modular Shiny workflow:
 #   - Each R file (module) is essentially a standalone Shiny app, containing a ui
@@ -68,7 +70,8 @@ midasApp <- function() {
             text-align: center;
             padding: 0.75em 1em;
             visibility: visible;
-          }'
+          }
+          '
         ))),
         
       fluidPage(

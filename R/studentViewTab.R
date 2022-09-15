@@ -299,7 +299,7 @@ studentViewTabServer <- function(id, uploadedData) {
       selectedStudent$data$specialEducation
     })
     
-    # ---- RENDER TRS/SRS SCORE BOXES ----
+    # ---- RENDER TRS/SRS VALUEBOXES ----
     
     output$trsTotalBox <- renderValueBox({
       valueBox(
@@ -335,7 +335,7 @@ studentViewTabServer <- function(id, uploadedData) {
     })
     
     
-    # ---- RENDER MySAEBRS BOXES ----
+    # ---- RENDER MySAEBRS VALUEBOXES ----
     
     output$myTotalBox <- renderValueBox({
       valueBox(

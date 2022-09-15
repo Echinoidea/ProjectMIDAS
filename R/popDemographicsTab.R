@@ -4,6 +4,18 @@
 popDemographicsTabUI <- function(id) {
   ns <- NS(id)
   
+  tags$head(
+    tags$style(
+      HTML(
+        "
+        #bottommap-genderRisk {
+          height: 200px;
+        }
+        "
+      )
+    )
+  )
+  
   tabItem(
     tabName = "popDemographicsTab",
     
@@ -33,7 +45,89 @@ popDemographicsTabUI <- function(id) {
         )
       ),
       
-      #bsModal(id = (NS(id, "bsModalTest")), title = "Modal Test", p("this is a modal"))
+      #bsModal(id = (NS(id, "bsModalTest")), title = "Modal Test", "genderHist", size = "large", p("this is a modal"))
+      
+      # ---- MODALS ----
+      bsModal(id = NS(id, "genderModal"),
+              title = "Gender Statistics",
+              trigger = "genderHist",
+              size = "large",
+              
+              # Counts for each factor
+              # 
+              # Box plot for each factor
+              # 
+              
+              # Display average midas risk for group, and tab panel to view trs and mysaebers scores
+              
+              tabsetPanel(
+                tabPanel(
+                  "Female",
+                  
+                  fluidRow(
+                    column(
+                      4,
+                      style = "margin-top:50px",
+                      flexdashboard::valueBoxOutput(NS(id, "genderRisk"), width = 12, height = "250px")
+                    ),
+                    
+                    column(
+                      8,
+                      style = "margin-top:5px",
+                      # box(
+                        tabsetPanel(
+                          tabPanel(
+                            "TRS/SRS",
+                            fluidRow(
+                              valueBoxOutput(NS(id, "genderTrsTotal"), width = 12)
+                              # column(
+                              #   5,
+                              #   div(
+                              #   valueBoxOutput(NS(id, "genderTrsTotal"), width = 12)
+                              #   )
+                              # ),
+                              # column(
+                              #   7,
+                              #   div(
+                              #   fluidRow(
+                              #     valueBoxOutput(NS(id, "genderTrsSocial"), width = 12)
+                              #   ),
+                              #   fluidRow(
+                              #     valueBoxOutput(NS(id, "genderTrsAcademic"), width = 12)
+                              #   ),
+                              #   fluidRow(
+                              #     valueBoxOutput(NS(id, "genderTrsEmotional"), width = 12)
+                              #   )
+                              #   )
+                              # )
+                            ),
+                            fluidRow(
+                              valueBoxOutput(NS(id, "genderTrsSocial"), width = 4),
+                              valueBoxOutput(NS(id, "genderTrsAcademic"), width = 4),
+                              valueBoxOutput(NS(id, "genderTrsEmotional"), width = 4)
+                            )
+                          )
+                        )
+                      # )
+                      #tags$head(tags$style('#foo .box-header{ display: none}'))
+                    )
+                  )
+                )
+              ),
+              
+              
+              box(
+                title = "SAEBERS-TRS/SRS Total Behavior Distribution",
+                plotOutput(NS(id, "genderTrsBoxplot")),
+                width = 12
+              ),
+              
+              box(
+                title = "MySAEBERS Total Behavior Distribution",
+                plotOutput(NS(id, "genderMyBoxplot")),
+                width = 12
+              )
+      )
     )
   )
 }
@@ -42,27 +136,7 @@ popDemographicsTabUI <- function(id) {
 popDemographicsTabServer <- function(id, uploadedData) {
   moduleServer(id, function(input, output, session) {
     
-    # openModal <- "
-    # function(el, x) {
-    #   el.on('plotly_click', function(d) {
-    #     var point = d.points[0];
-    #     
-    #   })
-    # }
-    # "
-    
-    # ---- PLOTS ----
-    # output$genderHist <- renderPlotly({
-    #   
-    #   
-    #   
-    #   p <- ggplot(data = uploadedData(), aes(x = gender)) +
-    #     geom_bar() +
-    #     theme_bw()
-    #     
-    #   ggplotly(p, tooltip = c("textF", "textM")) %>%
-    #     config(displayModeBar = FALSE)
-    # })
+    # ---- DEMOGRAPHICS PLOTS ----
     
     output$genderHist <- renderPlot({
       ggplot(data = uploadedData(), aes(gender, fill = gender)) +
@@ -160,6 +234,153 @@ popDemographicsTabServer <- function(id, uploadedData) {
         ) +
         scale_fill_brewer(palette = "YlGnBu")
     })
+    
+    
+    # ---- GENDER PLOTS ----
+    
+    # sAEBERS-TRS/SRS Total behavior boxplot by gender
+    output$genderTrsBoxplot <- renderPlot({
+      #ggplot(data = subset(uploadedData(), gender == "")) +
+      ggplot() +
+        # Geom layer - Boxplot, point, and label
+        geom_boxplot(data = subset(uploadedData(), gender == "female"),
+                     aes(x = trsTotalBehavior, y = 0.5),
+                     width = 0.3) +
+        # Stat summary to label min, Q1, Q2, Q3, and max
+        stat_summary(
+          data = subset(uploadedData(), gender == "female"),
+          geom = "text",
+          fun = quantile, #function(x) boxplot.stats(x)$stats,
+          aes(x = trsTotalBehavior, y = 0.5, label = ..x..),
+          position = position_nudge(y = -0.25),
+          size = 4,
+          color = "#FB8072",
+          orientation = "y"
+        ) +
+        
+        geom_boxplot(data = subset(uploadedData(), gender == "male"),
+                     aes(x = trsTotalBehavior, y = -0.5),
+                     width = 0.3) +
+        # Stat summary to label min, Q1, Q2, Q3, and max
+        stat_summary(
+          data = subset(uploadedData(), gender == "male"),
+          geom = "text",
+          fun = quantile, #function(x) boxplot.stats(x)$stats,
+          aes(x = trsTotalBehavior, y = -0.5, label = ..x..),
+          position = position_nudge(y = -0.25),
+          size = 4,
+          color = "#FB8072",
+          orientation = "y"
+        ) +
+        
+        # Visuals
+        xlim(0, 60) +
+        ylim(-1, 1) +
+        labs(title = "",
+             x = "",
+             y = "") +
+        theme_bw() +
+        theme(
+          legend.position = "none",
+          title = element_blank(),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          axis.text.y = element_blank(),
+          axis.ticks.y = element_blank()
+        )
+    })
+    
+    output$genderTrsBoxplot <- renderPlot({
+      #ggplot(data = subset(uploadedData(), gender == "")) +
+      ggplot() +
+        # Geom layer - Boxplot, point, and label
+        geom_boxplot(data = subset(uploadedData(), gender == "female"),
+                     aes(x = trsTotalBehavior, y = 0.5),
+                     width = 0.3) +
+        # Stat summary to label min, Q1, Q2, Q3, and max
+        stat_summary(
+          data = subset(uploadedData(), gender == "female"),
+          geom = "text",
+          fun = quantile, #function(x) boxplot.stats(x)$stats,
+          aes(x = trsTotalBehavior, y = 0.5, label = ..x..),
+          position = position_nudge(y = -0.25),
+          size = 4,
+          color = "#FB8072",
+          orientation = "y"
+        ) +
+        
+        geom_boxplot(data = subset(uploadedData(), gender == "male"),
+                     aes(x = trsTotalBehavior, y = -0.5),
+                     width = 0.3) +
+        # Stat summary to label min, Q1, Q2, Q3, and max
+        stat_summary(
+          data = subset(uploadedData(), gender == "male"),
+          geom = "text",
+          fun = quantile, #function(x) boxplot.stats(x)$stats,
+          aes(x = trsTotalBehavior, y = -0.5, label = ..x..),
+          position = position_nudge(y = -0.25),
+          size = 4,
+          color = "#FB8072",
+          orientation = "y"
+        ) +
+        
+        # Visuals
+        xlim(0, 60) +
+        ylim(-1, 1) +
+        labs(title = "",
+             x = "",
+             y = "") +
+        theme_bw() +
+        theme(
+          legend.position = "none",
+          title = element_blank(),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          axis.text.y = element_blank(),
+          axis.ticks.y = element_blank()
+        )
+    })
+    
+    # ---- GENDER VALUEBOX RENDERING ----
+    
+    output$genderRisk <- renderValueBox({
+      valueBox(
+        value = "X",
+        subtitle = "A"
+      )
+    })
+    
+    output$genderTrsTotal <- renderValueBox({
+      valueBox(
+        value = "X",
+        subtitle = "A"
+      )
+    })
+    
+    output$genderTrsSocial <- renderValueBox({
+      valueBox(
+        value = "X",
+        subtitle = "A"
+      )
+    })
+    
+    output$genderTrsAcademic <- renderValueBox({
+      valueBox(
+        value = "X",
+        subtitle = "A"
+      )
+    })
+    
+    output$genderTrsEmotional <- renderValueBox({
+      valueBox(
+        value = "X",
+        subtitle = "A"
+      )
+    })
+    
+    # ---- PLOT ONCLICK EVENT OBSERVERS ----
+    onclick("genderHist", toggleModal(session, "genderModal"))
+    
   })
 }
 
