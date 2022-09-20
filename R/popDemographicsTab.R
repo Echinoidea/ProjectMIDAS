@@ -75,39 +75,20 @@ popDemographicsTabUI <- function(id) {
                       8,
                       style = "margin-top:5px",
                       # box(
-                        tabsetPanel(
-                          tabPanel(
-                            "TRS/SRS",
-                            fluidRow(
-                              valueBoxOutput(NS(id, "genderTrsTotal"), width = 12)
-                              # column(
-                              #   5,
-                              #   div(
-                              #   valueBoxOutput(NS(id, "genderTrsTotal"), width = 12)
-                              #   )
-                              # ),
-                              # column(
-                              #   7,
-                              #   div(
-                              #   fluidRow(
-                              #     valueBoxOutput(NS(id, "genderTrsSocial"), width = 12)
-                              #   ),
-                              #   fluidRow(
-                              #     valueBoxOutput(NS(id, "genderTrsAcademic"), width = 12)
-                              #   ),
-                              #   fluidRow(
-                              #     valueBoxOutput(NS(id, "genderTrsEmotional"), width = 12)
-                              #   )
-                              #   )
-                              # )
-                            ),
-                            fluidRow(
-                              valueBoxOutput(NS(id, "genderTrsSocial"), width = 4),
-                              valueBoxOutput(NS(id, "genderTrsAcademic"), width = 4),
-                              valueBoxOutput(NS(id, "genderTrsEmotional"), width = 4)
-                            )
+                      tabsetPanel(
+                        tabPanel(
+                          "TRS/SRS",
+                          fluidRow(
+                            valueBoxOutput(NS(id, "genderTrsTotal"), width = 12)
+                          ),
+                          
+                          fluidRow(
+                            valueBoxOutput(NS(id, "genderTrsSocial"), width = 4),
+                            valueBoxOutput(NS(id, "genderTrsAcademic"), width = 4),
+                            valueBoxOutput(NS(id, "genderTrsEmotional"), width = 4)
                           )
                         )
+                      )
                       # )
                       #tags$head(tags$style('#foo .box-header{ display: none}'))
                     )
@@ -117,14 +98,8 @@ popDemographicsTabUI <- function(id) {
               
               
               box(
-                title = "SAEBERS-TRS/SRS Total Behavior Distribution",
-                plotOutput(NS(id, "genderTrsBoxplot")),
-                width = 12
-              ),
-              
-              box(
-                title = "MySAEBERS Total Behavior Distribution",
-                plotOutput(NS(id, "genderMyBoxplot")),
+                title = "MIDAS Risk Distribution",
+                plotOutput(NS(id, "genderRiskDensity")),
                 width = 12
               )
       )
@@ -239,19 +214,19 @@ popDemographicsTabServer <- function(id, uploadedData) {
     # ---- GENDER PLOTS ----
     
     # sAEBERS-TRS/SRS Total behavior boxplot by gender
-    output$genderTrsBoxplot <- renderPlot({
+    output$genderMidasBoxplot <- renderPlot({
       #ggplot(data = subset(uploadedData(), gender == "")) +
       ggplot() +
         # Geom layer - Boxplot, point, and label
         geom_boxplot(data = subset(uploadedData(), gender == "female"),
-                     aes(x = trsTotalBehavior, y = 0.5),
+                     aes(x = midasRisk, y = 0.5),
                      width = 0.3) +
         # Stat summary to label min, Q1, Q2, Q3, and max
         stat_summary(
           data = subset(uploadedData(), gender == "female"),
           geom = "text",
           fun = quantile, #function(x) boxplot.stats(x)$stats,
-          aes(x = trsTotalBehavior, y = 0.5, label = ..x..),
+          aes(x = midasRisk, y = 0.5, label = ..x..),
           position = position_nudge(y = -0.25),
           size = 4,
           color = "#FB8072",
@@ -259,14 +234,14 @@ popDemographicsTabServer <- function(id, uploadedData) {
         ) +
         
         geom_boxplot(data = subset(uploadedData(), gender == "male"),
-                     aes(x = trsTotalBehavior, y = -0.5),
+                     aes(x = midasRisk, y = -0.5),
                      width = 0.3) +
         # Stat summary to label min, Q1, Q2, Q3, and max
         stat_summary(
           data = subset(uploadedData(), gender == "male"),
           geom = "text",
           fun = quantile, #function(x) boxplot.stats(x)$stats,
-          aes(x = trsTotalBehavior, y = -0.5, label = ..x..),
+          aes(x = midasRisk, y = -0.5, label = ..x..),
           position = position_nudge(y = -0.25),
           size = 4,
           color = "#FB8072",
@@ -290,56 +265,24 @@ popDemographicsTabServer <- function(id, uploadedData) {
         )
     })
     
-    output$genderTrsBoxplot <- renderPlot({
-      #ggplot(data = subset(uploadedData(), gender == "")) +
-      ggplot() +
-        # Geom layer - Boxplot, point, and label
-        geom_boxplot(data = subset(uploadedData(), gender == "female"),
-                     aes(x = trsTotalBehavior, y = 0.5),
-                     width = 0.3) +
-        # Stat summary to label min, Q1, Q2, Q3, and max
-        stat_summary(
-          data = subset(uploadedData(), gender == "female"),
-          geom = "text",
-          fun = quantile, #function(x) boxplot.stats(x)$stats,
-          aes(x = trsTotalBehavior, y = 0.5, label = ..x..),
-          position = position_nudge(y = -0.25),
-          size = 4,
-          color = "#FB8072",
-          orientation = "y"
-        ) +
-        
-        geom_boxplot(data = subset(uploadedData(), gender == "male"),
-                     aes(x = trsTotalBehavior, y = -0.5),
-                     width = 0.3) +
-        # Stat summary to label min, Q1, Q2, Q3, and max
-        stat_summary(
-          data = subset(uploadedData(), gender == "male"),
-          geom = "text",
-          fun = quantile, #function(x) boxplot.stats(x)$stats,
-          aes(x = trsTotalBehavior, y = -0.5, label = ..x..),
-          position = position_nudge(y = -0.25),
-          size = 4,
-          color = "#FB8072",
-          orientation = "y"
-        ) +
-        
-        # Visuals
-        xlim(0, 60) +
-        ylim(-1, 1) +
-        labs(title = "",
-             x = "",
-             y = "") +
-        theme_bw() +
-        theme(
-          legend.position = "none",
-          title = element_blank(),
-          axis.title.x = element_blank(),
-          axis.title.y = element_blank(),
-          axis.text.y = element_blank(),
-          axis.ticks.y = element_blank()
-        )
+    
+    output$genderRiskDensity <- renderPlot({
+      ggplot(uploadedData(), aes(x = midasRisk)) +
+        # Geom layer - Density, vertical line, label
+        geom_density() + #adjust = 0.5
+          
+          #scale_y_continuous(labels = scales::percent) +
+          xlim(0, 50) +
+          labs(title = "",
+               x = "MIDAS Risk Score",
+               y = "Number of Students") +
+          theme_bw() +
+          theme(
+            legend.position = "none",
+            title = element_blank(),
+          )
     })
+    
     
     # ---- GENDER VALUEBOX RENDERING ----
     
