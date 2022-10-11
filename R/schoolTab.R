@@ -1,19 +1,18 @@
 # ---- UI ----
 schoolTabUI <- function(id) {
   ns <- NS(id)
-  # $("#schoolTabUI_avgRisk").height("500px");
-  
   
   tabItem(
     tabName = "dashboardTab",
     
     fluidRow(
       # Average MIDAS Risk for whole school and SAEBRS scores for whole school
+      # ---- School-wide Averages ----
       column(
         4,
         
         box(
-          # ---- Average Risk ----
+          # -- Average Risk --
           fluidRow(
             column(
               12,
@@ -27,7 +26,7 @@ schoolTabUI <- function(id) {
           
           hr(),
           
-          # ---- SAEBRS TRS ----
+          # -- SAEBRS TRS --
           fluidRow(
             valueBoxOutput(
               NS(id, "avgTrs"),
@@ -51,7 +50,7 @@ schoolTabUI <- function(id) {
           
           hr(),
           
-          # ---- MySAEBRS ----
+          # -- MySAEBRS --
           fluidRow(
             valueBoxOutput(
               NS(id, "avgMySaebrs"),
@@ -79,9 +78,54 @@ schoolTabUI <- function(id) {
       ),
       
       # Grade data - Average risk histogram, grade summary below (three columns)
+      # ---- Grade-wide Data ----
       column(
         8,
+        # -- Average Risk Grade Histogram --
+        fluidRow(
+          box(
+            plotOutput(NS(id, "gradeRiskHist")),
+            width = 12
+          )
+        ),
         
+        # -- Statistics summary by grade - 3 columns
+        fluidRow(
+          box(
+            column(
+              4,
+              id = NS(id, "sixthColumn"),
+              verticalLayout(
+                valueBoxOutput(NS(id, "sixthStudentCount"), width = 12),
+                valueBoxOutput(NS(id, "sixthHighRiskPerc"), width = 12),
+                # valueBoxOutput(NS(id, "sixthMedRiskPerc"), width = 12),
+                # valueBoxOutput(NS(id, "sixthLowRiskPerc"), width = 12),
+                appButton(inputId = NS(id, "sixthGradeButton"), label = "View Sixth Grade Classrooms")
+              )
+            ),
+            column(
+              4,
+              verticalLayout(
+                valueBoxOutput(NS(id, "seventhStudentCount"), width = 12),
+                valueBoxOutput(NS(id, "seventhHighRiskPerc"), width = 12),
+                # valueBoxOutput(NS(id, "seventhMedRiskPerc"), width = 12),s
+                # valueBoxOutput(NS(id, "seventhLowRiskPerc"), width = 12),
+                box("view classrooms")
+              )
+            ),
+            column(
+              4,
+              verticalLayout(
+                valueBoxOutput(NS(id, "eighthStudentCount"), width = 12),
+                valueBoxOutput(NS(id, "eighthHighRiskPerc"), width = 12),
+                # valueBoxOutput(NS(id, "eighthMedRiskPerc"), width = 12),
+                # valueBoxOutput(NS(id, "eighthLowRiskPerc"), width = 12),
+                box("view classrooms")
+              )
+            ),
+            width = 12
+          )
+        )
       )
       
     ),
@@ -93,7 +137,17 @@ schoolTabUI <- function(id) {
                         height: 175px;
                         }
                         
-                        hr {border-top: 0px solid #000000;}"
+                        hr {border-top: 0px solid #000000;}
+                        
+                        #dashboardTab-sixthColumn .col-sm-12 {
+                        align-items: "center";
+                        justify-content: "center";
+                        align: "center";
+                        }
+                        
+                        .small-box.bg-green {background-color: #cadfb1 !important};
+                        
+                        .small-box.bg-yellow {background-color: #9bcb3b !important};
                         ')))
   )
   
@@ -109,68 +163,166 @@ schoolTabServer <- function(id, uploadedData) {
     output$avgRisk <- renderValueBox({
       valueBox(
         value = round(mean(uploadedData()$midasRisk)),
-        subtitle = "Average Risk"
+        subtitle = "Average Risk",
+        color = "green"
       )
     })
     
-    # -- TRS Scores --
+    # ---- VB TRS Scores ----
     
     output$avgTrs <- renderValueBox({
       valueBox(
         value = round(mean(uploadedData()$trsTotalBehavior)),
-        subtitle = "TRS-SAEBRS Total"
+        subtitle = "TRS-SAEBRS Total",
+        color = "green"
       )
     })
     
     output$avgTrsSocial <- renderValueBox({
       valueBox(
         value = round(mean(uploadedData()$trsSocialBehavior)),
-        subtitle = "TRS-SAEBRS Social           "
+        subtitle = "TRS-SAEBRS Social",
+        color = "green"
       )
     })
     
     output$avgTrsAcademic <- renderValueBox({
       valueBox(
         value = round(mean(uploadedData()$trsAcademicBehavior)),
-        subtitle = "TRS-SAEBRS Academic"
+        subtitle = "TRS-SAEBRS Academic",
+        color = "green"
       )
     })
     
     output$avgTrsEmotional <- renderValueBox({
       valueBox(
         value = round(mean(uploadedData()$trsEmotionalBehavior)),
-        subtitle = "TRS-SAEBRS Emotional"
+        subtitle = "TRS-SAEBRS Emotional",
+        color = "green"
       )
     })
 
-    # -- MySAEBRS Scores --
+    # ---- VB MySAEBRS Scores ----
         
     output$avgMySaebrs <- renderValueBox({
       valueBox(
         value = round(mean(uploadedData()$totalBehavior)),
-        subtitle = "MySAEBRS Total"
+        subtitle = "MySAEBRS Total",
+        color = "green"
       )
     })
     
     output$avgMySocial <- renderValueBox({
       valueBox(
         value = round(mean(uploadedData()$socialBehavior)),
-        subtitle = "MySAEBRS Social             "
+        subtitle = "MySAEBRS Social",
+        color = "green"
       )
     })
     
     output$avgMyAcademic <- renderValueBox({
       valueBox(
         value = round(mean(uploadedData()$academicBehavior)),
-        subtitle = "MySAEBRS Academic"
+        subtitle = "MySAEBRS Academic",
+        color = "green"
       )
     })
     
     output$avgMyEmotional <- renderValueBox({
       valueBox(
         value = round(mean(uploadedData()$emotionalBehavior)),
-        subtitle = "MySAEBRS Emotional"
+        subtitle = "MySAEBRS Emotional",
+        color = "green"
       )
+    })
+    
+    # ---- VB SIXTH GRADE ----
+    sixthGraders <- reactive(subset(uploadedData(), grade == 6))
+    seventhGraders <- reactive(subset(uploadedData(), grade == 7))
+    eighthGraders <- reactive(subset(uploadedData(), grade == 8))
+    
+    # THIS WILL PROBABLY CHANGE - WE DONT KNOW HOW THE RISK SCORE WORKS AND WHAT CLASSIFIES AS HIGH RISK
+    lowRiskThresh <- 17
+    medRiskThresh <- 34
+    highRiskThresh <- 51
+    
+    output$sixthStudentCount <- renderValueBox({
+      valueBox(
+        nrow(sixthGraders()),
+        "# of 6th Graders",
+        color = "green"
+      )
+    })
+
+    output$sixthHighRiskPerc <- renderValueBox({
+      valueBox(
+        scales::percent(nrow(subset(sixthGraders(), midasRisk < highRiskThresh & midasRisk > medRiskThresh)) / nrow(sixthGraders())),
+        "High Risk %",
+        color = "green"
+      )
+    })
+    
+    # ---- VB SEVENTH GRADE ----
+    
+    output$seventhStudentCount <- renderValueBox({
+      valueBox(
+        nrow(seventhGraders()),
+        "# of 7th Graders",
+        color = "green"
+      )
+    })
+    
+    output$seventhHighRiskPerc <- renderValueBox({
+      valueBox(
+        scales::percent(nrow(subset(seventhGraders(), midasRisk < highRiskThresh & midasRisk > medRiskThresh)) / nrow(seventhGraders())),
+        "High Risk %",
+        color = "green"
+      )
+    })
+    
+    # ---- VB EIGHTH GRADE ----
+    
+    output$eighthStudentCount <- renderValueBox({
+      valueBox(
+        nrow(eighthGraders()),
+        "# of 8th Graders",
+        color = "green"
+      )
+    })
+    
+    output$eighthHighRiskPerc <- renderValueBox({
+      valueBox(
+        scales::percent(nrow(subset(eighthGraders(), midasRisk < highRiskThresh & midasRisk > medRiskThresh)) / nrow(eighthGraders())),
+        "High Risk %",
+        color = "green"
+      )
+    })
+    
+    # ---- RENDER PLOTS ----
+    
+    gradeData <- reactive(
+      uploadedData() %>%
+      group_by(grade) %>%
+      summarize(mean_risk = mean(midasRisk))
+    )
+    
+    print(head(gradeData))
+    
+    output$gradeRiskHist <- renderPlot({
+      ggplot(data = gradeData(), aes(x = as.factor(grade), y = mean_risk)) +
+        geom_bar(stat = "identity", width = 0.3, fill = "#106849") +
+        geom_text(aes(label = round(mean_risk)), hjust = -1) +
+        
+        theme_bw() +
+        labs(
+          x = "Grade",
+          y = "Mean MIDAS Risk Score"
+        ) + 
+        ylim(0, 40) +
+        theme(
+          
+        ) +
+        coord_flip()
     })
   })
 }
