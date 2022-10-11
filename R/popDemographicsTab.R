@@ -288,36 +288,36 @@ popDemographicsTabServer <- function(id, uploadedData) {
     
     output$genderRisk <- renderValueBox({
       valueBox(
-        value = "X",
-        subtitle = "A"
+        value = round(mean(subset(uploadedData(), gender == "female")$midasRisk)),
+        subtitle = "MIDAS Risk"
       )
     })
     
     output$genderTrsTotal <- renderValueBox({
       valueBox(
-        value = "X",
-        subtitle = "A"
+        value = round(mean(subset(uploadedData(), gender == "female")$trsTotalBehavior)),
+        subtitle = "Average Total"
       )
     })
     
     output$genderTrsSocial <- renderValueBox({
       valueBox(
-        value = "X",
-        subtitle = "A"
+        value = round(mean(subset(uploadedData(), gender == "female")$trsSocialBehavior)),
+        subtitle = "Average Social"
       )
     })
     
     output$genderTrsAcademic <- renderValueBox({
       valueBox(
-        value = "X",
-        subtitle = "A"
+        value = round(mean(subset(uploadedData(), gender == "female")$trsAcademicBehavior)),
+        subtitle = "Average Academic"
       )
     })
     
     output$genderTrsEmotional <- renderValueBox({
       valueBox(
-        value = "X",
-        subtitle = "A"
+        value = round(mean(subset(uploadedData(), gender == "female")$trsEmotionalBehavior)),
+        subtitle = "Average Emotional"
       )
     })
     

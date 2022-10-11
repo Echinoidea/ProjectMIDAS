@@ -40,6 +40,10 @@ midasApp <- function() {
           text = "School",
           tabName = "schoolTab",
           menuSubItem(
+            text = "School Dashboard",
+            tabName = "dashboardTab"
+          ),
+          menuSubItem(
             text = "Demographics",
             tabName = "popDemographicsTab"
           ),
@@ -83,7 +87,7 @@ midasApp <- function() {
           studentViewTabUI("studentViewTab"),
           
           # School population tabs
-          schoolTabUI("schoolTab"),
+          schoolTabUI("dashboardTab"),
           popDemographicsTabUI("popDemographicsTab"),
           popSaebersTabUI("popSaebersTab"),
           popDataTabUI("popDataTab")
@@ -97,7 +101,7 @@ midasApp <- function() {
     uploadedData <- uploadTabServer("uploadTab")
     studentViewTabServer("studentViewTab", uploadedData)
     
-    schoolTabServer("schoolTab", uploadedData)
+    schoolTabServer("dashboardTab", uploadedData)
     popDemographicsTabServer("popDemographicsTab", uploadedData)
     popSaebersTabServer("popSaebersTab", uploadedData)
     popDataTabServer("popDataTab", uploadedData)

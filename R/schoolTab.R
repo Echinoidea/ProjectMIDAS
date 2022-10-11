@@ -1,39 +1,176 @@
 # ---- UI ----
-
-# Page with multiple tabs: SAEBERS, Demographics, Data (summary and dataset)
-# The SAEBERS page will contain similar graphs to the studentView graphs. I need
-# to think of how to make it unique and useful.
-
-# The demographics tab will be a 2x2 grid of plots. The layout will be:
-# [Gender Pie chart]    [Ethnicity Histogram]
-# [Special Ed pie]      [Grade Histogram]
-# Consider adding interactivity to show some data about each category of student.
-# Like, click the male segment of the gender pie chart to bring a pop-up of 
-# some data summary of all the male students. Probably focus on showing more
-# demographic info instead of SAEBERS because that will be on the SAEBERS tab.
-# Use shinyBS package for modal popups and tooltips for displaying extra demo info
-
-# The Data tab will be a more raw view of the dataset. Make a summary section
-# and a data view section. Idk how to make data view more attractive. Also, 
-# maybe add a download to csv, xlsx, etc. button.
-# Use renderDataTable
-
 schoolTabUI <- function(id) {
   ns <- NS(id)
+  # $("#schoolTabUI_avgRisk").height("500px");
+  
   
   tabItem(
-    tabName = "schoolTab",
+    tabName = "dashboardTab",
     
-    # IF I STICK WITH SPLITTING UP SCHOOL INTO THREE TABS, THIS FILE WILL BE 
-    # DELETED BECAUSE IT IS NEVER ACCESSED
-    
-    p("bye")
+    fluidRow(
+      # Average MIDAS Risk for whole school and SAEBRS scores for whole school
+      column(
+        4,
+        
+        box(
+          # ---- Average Risk ----
+          fluidRow(
+            column(
+              12,
+              valueBoxOutput(
+                NS(id, "avgRisk"),
+                width = 12
+              ),
+              align = "center"
+            )
+          ),
+          
+          hr(),
+          
+          # ---- SAEBRS TRS ----
+          fluidRow(
+            valueBoxOutput(
+              NS(id, "avgTrs"),
+              width = 12
+            )
+          ),
+          fluidRow(
+            valueBoxOutput(
+              NS(id, "avgTrsSocial"),
+              width = 4
+            ),
+            valueBoxOutput(
+              NS(id, "avgTrsAcademic"),
+              width = 4
+            ),
+            valueBoxOutput(
+              NS(id, "avgTrsEmotional"),
+              width = 4
+            )
+          ),
+          
+          hr(),
+          
+          # ---- MySAEBRS ----
+          fluidRow(
+            valueBoxOutput(
+              NS(id, "avgMySaebrs"),
+              width = 12
+            )
+          ),
+          fluidRow(
+            valueBoxOutput(
+              NS(id, "avgMySocial"),
+              width = 4
+            ),
+            
+            
+            valueBoxOutput(
+              NS(id, "avgMyAcademic"),
+              width = 4
+            ),
+            valueBoxOutput(
+              NS(id, "avgMyEmotional"),
+              width = 4
+            )
+          ),
+          width = 12
+        )
+      ),
+      
+      # Grade data - Average risk histogram, grade summary below (three columns)
+      column(
+        8,
+        
+      )
+      
+    ),
+    # FINALLY!!!!!!
+    # TO ACCESS ELEMENTS FROM MODULE BY ID, DO {NS}-{id} .{child}
+    tags$head(tags$style(HTML('
+                        #dashboardTab-avgRisk .small-box {
+                        width: 225px;
+                        height: 175px;
+                        }
+                        
+                        hr {border-top: 0px solid #000000;}"
+                        ')))
   )
+  
+  
 }
 
 # ---- SERVER ----
 schoolTabServer <- function(id, uploadedData) {
   moduleServer(id, function(input, output, session) {
     
+    
+    # ---- RENDER VALUEBOXOUTPUTS ----
+    output$avgRisk <- renderValueBox({
+      valueBox(
+        value = round(mean(uploadedData()$midasRisk)),
+        subtitle = "Average Risk"
+      )
+    })
+    
+    # -- TRS Scores --
+    
+    output$avgTrs <- renderValueBox({
+      valueBox(
+        value = round(mean(uploadedData()$trsTotalBehavior)),
+        subtitle = "TRS-SAEBRS Total"
+      )
+    })
+    
+    output$avgTrsSocial <- renderValueBox({
+      valueBox(
+        value = round(mean(uploadedData()$trsSocialBehavior)),
+        subtitle = "TRS-SAEBRS Social           "
+      )
+    })
+    
+    output$avgTrsAcademic <- renderValueBox({
+      valueBox(
+        value = round(mean(uploadedData()$trsAcademicBehavior)),
+        subtitle = "TRS-SAEBRS Academic"
+      )
+    })
+    
+    output$avgTrsEmotional <- renderValueBox({
+      valueBox(
+        value = round(mean(uploadedData()$trsEmotionalBehavior)),
+        subtitle = "TRS-SAEBRS Emotional"
+      )
+    })
+
+    # -- MySAEBRS Scores --
+        
+    output$avgMySaebrs <- renderValueBox({
+      valueBox(
+        value = round(mean(uploadedData()$totalBehavior)),
+        subtitle = "MySAEBRS Total"
+      )
+    })
+    
+    output$avgMySocial <- renderValueBox({
+      valueBox(
+        value = round(mean(uploadedData()$socialBehavior)),
+        subtitle = "MySAEBRS Social             "
+      )
+    })
+    
+    output$avgMyAcademic <- renderValueBox({
+      valueBox(
+        value = round(mean(uploadedData()$academicBehavior)),
+        subtitle = "MySAEBRS Academic"
+      )
+    })
+    
+    output$avgMyEmotional <- renderValueBox({
+      valueBox(
+        value = round(mean(uploadedData()$emotionalBehavior)),
+        subtitle = "MySAEBRS Emotional"
+      )
+    })
   })
 }
