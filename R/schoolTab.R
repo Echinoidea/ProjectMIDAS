@@ -100,7 +100,10 @@ schoolTabUI <- function(id) {
                 valueBoxOutput(NS(id, "sixthHighRiskPerc"), width = 12),
                 # valueBoxOutput(NS(id, "sixthMedRiskPerc"), width = 12),
                 # valueBoxOutput(NS(id, "sixthLowRiskPerc"), width = 12),
-                appButton(inputId = NS(id, "sixthGradeButton"), label = "View Sixth Grade Classrooms")
+                div(
+                  id = NS(id, "sixthGradeButtonDiv"),
+                  appButton(inputId = NS(id, "sixthGradeButton"), label = "View 6th Grade Classrooms")
+                )
               )
             ),
             column(
@@ -110,7 +113,10 @@ schoolTabUI <- function(id) {
                 valueBoxOutput(NS(id, "seventhHighRiskPerc"), width = 12),
                 # valueBoxOutput(NS(id, "seventhMedRiskPerc"), width = 12),s
                 # valueBoxOutput(NS(id, "seventhLowRiskPerc"), width = 12),
-                box("view classrooms")
+                div(
+                  id = NS(id, "seventhGradeButtonDiv"),
+                  appButton(inputId = NS(id, "seventhGradeButton"), label = "View 7th Grade Classrooms")
+                )
               )
             ),
             column(
@@ -120,7 +126,10 @@ schoolTabUI <- function(id) {
                 valueBoxOutput(NS(id, "eighthHighRiskPerc"), width = 12),
                 # valueBoxOutput(NS(id, "eighthMedRiskPerc"), width = 12),
                 # valueBoxOutput(NS(id, "eighthLowRiskPerc"), width = 12),
-                box("view classrooms")
+                div(
+                  id = NS(id, "eighthGradeButtonDiv"),
+                  appButton(inputId = NS(id, "eighthGradeButton"), label = "View 8th Grade Classrooms")
+                )
               )
             ),
             width = 12
@@ -139,13 +148,36 @@ schoolTabUI <- function(id) {
                         
                         hr {border-top: 0px solid #000000;}
                         
-                        #dashboardTab-sixthColumn .col-sm-12 {
-                        align-items: "center";
-                        justify-content: "center";
-                        align: "center";
+                        /* Div that contains a single button that allows us to 
+                        center it horizontally in the column */
+                        #dashboardTab-sixthGradeButtonDiv {
+                        text-align: center;
                         }
                         
-                        .small-box.bg-green {background-color: #cadfb1 !important};
+                        #dashboardTab-sixthGradeButton {
+                        width: 90%;
+                        margin: auto;
+                        }
+                        
+                        #dashboardTab-seventhGradeButtonDiv {
+                        text-align: center;
+                        }
+                        
+                        #dashboardTab-seventhGradeButton {
+                        width: 90%;
+                        margin: auto;
+                        }
+                        
+                        #dashboardTab-eighthGradeButtonDiv {
+                        text-align: center;
+                        }
+                        
+                        #dashboardTab-eighthGradeButton {
+                        width: 90%;
+                        margin: auto;
+                        }
+                        
+                        .small-box.bg-green {background-color: #94bc5c !important};
                         
                         .small-box.bg-yellow {background-color: #9bcb3b !important};
                         ')))
@@ -325,4 +357,9 @@ schoolTabServer <- function(id, uploadedData) {
         coord_flip()
     })
   })
+  
+  
+  # ---- BUTTON EVENTS ----
+  
+  
 }
