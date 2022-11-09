@@ -12,6 +12,7 @@ schoolTabUI <- function(id) {
         4,
         
         box(
+          title = "Score Summary",
           # -- Average Risk --
           fluidRow(
             column(
@@ -23,8 +24,7 @@ schoolTabUI <- function(id) {
               align = "center"
             )
           ),
-          
-          hr(),
+        
           
           # -- SAEBRS TRS --
           fluidRow(
@@ -84,6 +84,7 @@ schoolTabUI <- function(id) {
         # -- Average Risk Grade Histogram --
         fluidRow(
           box(
+            title = "Average MIDAS Risk by Grade",
             plotOutput(NS(id, "gradeRiskHist")),
             width = 12
           )
@@ -92,6 +93,7 @@ schoolTabUI <- function(id) {
         # -- Statistics summary by grade - 3 columns
         fluidRow(
           box(
+            id = NS(id, "gradeSummaryBox"),
             column(
               4,
               id = NS(id, "sixthColumn"),
@@ -100,7 +102,10 @@ schoolTabUI <- function(id) {
                 valueBoxOutput(NS(id, "sixthHighRiskPerc"), width = 12),
                 # valueBoxOutput(NS(id, "sixthMedRiskPerc"), width = 12),
                 # valueBoxOutput(NS(id, "sixthLowRiskPerc"), width = 12),
-                appButton(inputId = NS(id, "sixthGradeButton"), label = "View Sixth Grade Classrooms")
+                div(
+                  id = NS(id, "sixthGradeButtonDiv"),
+                  appButton(inputId = NS(id, "sixthGradeButton"), label = "View 6th Grade Classrooms")
+                )
               )
             ),
             column(
@@ -110,7 +115,10 @@ schoolTabUI <- function(id) {
                 valueBoxOutput(NS(id, "seventhHighRiskPerc"), width = 12),
                 # valueBoxOutput(NS(id, "seventhMedRiskPerc"), width = 12),s
                 # valueBoxOutput(NS(id, "seventhLowRiskPerc"), width = 12),
-                box("view classrooms")
+                div(
+                  id = NS(id, "seventhGradeButtonDiv"),
+                  appButton(inputId = NS(id, "seventhGradeButton"), label = "View 7th Grade Classrooms")
+                )
               )
             ),
             column(
@@ -120,7 +128,10 @@ schoolTabUI <- function(id) {
                 valueBoxOutput(NS(id, "eighthHighRiskPerc"), width = 12),
                 # valueBoxOutput(NS(id, "eighthMedRiskPerc"), width = 12),
                 # valueBoxOutput(NS(id, "eighthLowRiskPerc"), width = 12),
-                box("view classrooms")
+                div(
+                  id = NS(id, "eighthGradeButtonDiv"),
+                  appButton(inputId = NS(id, "eighthGradeButton"), label = "View 8th Grade Classrooms")
+                )
               )
             ),
             width = 12
@@ -131,6 +142,7 @@ schoolTabUI <- function(id) {
     ),
     # FINALLY!!!!!!
     # TO ACCESS ELEMENTS FROM MODULE BY ID, DO {NS}-{id} .{child}
+    
     tags$head(tags$style(HTML('
                         #dashboardTab-avgRisk .small-box {
                         width: 225px;
@@ -139,19 +151,71 @@ schoolTabUI <- function(id) {
                         
                         hr {border-top: 0px solid #000000;}
                         
-                        #dashboardTab-sixthColumn .col-sm-12 {
-                        align-items: "center";
-                        justify-content: "center";
-                        align: "center";
+                        /* Div that contains a single button that allows us to 
+                        center it horizontally in the column */
+                        #dashboardTab-sixthGradeButtonDiv {
+                        text-align: center;
                         }
                         
-                        .small-box.bg-green {background-color: #cadfb1 !important};
+                        #dashboardTab-sixthGradeButton {
+                        width: 90%;
+                        margin: auto;
+                        }
                         
-                        .small-box.bg-yellow {background-color: #9bcb3b !important};
+                        #dashboardTab-seventhGradeButtonDiv {
+                        text-align: center;
+                        }
+                        
+                        #dashboardTab-seventhGradeButton {
+                        width: 90%;
+                        margin: auto;
+                        }
+                        
+                        #dashboardTab-eighthGradeButtonDiv {
+                        text-align: center;
+                        }
+                        
+                        #dashboardTab-eighthGradeButton {
+                        width: 90%;
+                        margin: auto;
+                        }
+                        
+                        #dashboardTab-gradeSummaryBox .box-header {
+                        display: none;
+                        }
+                        
+                        #dashboardTab-avgRisk .inner {
+                        align-text: left;
+                        padding: 50px;
+                        }
+                        
+                        #dashboardTab-avgRisk h3 {
+                        font-size: 50px;
+                        }
+                        
+                        #dashboardTab-avgRisk p {
+                        font-size: 20px;
+                        }
+                        
+                        .small-box.bg-green {
+                        background-color: #106849 !important
+                        };
+                        
+                        .small-box h3 {
+                          color: #f5f5f5;
+                        }
+                        
+                        .small-box p {
+                        color: #f5f5f5;
+                        }
+                        
+                        .small-box.bg-yellow {
+                        background-color: #9bcb3b !important
+                        };
                         ')))
   )
   
-  
+  # #94bc5c
 }
 
 # ---- SERVER ----
@@ -320,9 +384,45 @@ schoolTabServer <- function(id, uploadedData) {
         ) + 
         ylim(0, 40) +
         theme(
-          
+          axis.title = element_text(size = 15),
+          axis.text = element_text(size = 13)
         ) +
         coord_flip()
     })
   })
+  
+  
+  # ---- BUTTON EVENTS ----
+  
+  
 }
+
+# MIDAS COLOR SCHEMES
+
+# Best 
+# blue grey to white to light green to dark green
+# #183239,#617b84,#b1ced7,#f5f5f5,#73a944,#498848,#106849
+
+# USF MIDAS PALETTE
+# Dark green to light green to blue grey
+# #106849,#498848,#73a944,#9bcb3b,#96b2bb,#546f77,#183239
+
+# Another USF Palette
+# #00391e,#287252,#5faf8c,#a4e0c4,#f5f5f5,#86b147,#719652,#5c7c5e,#476169
+# Dark green to white to light green to blue grey
+
+# DARK GREEN BLUE TO GREY GRADIENT PALETTE 
+#00876c
+#6aaa96
+#aecdc2
+#f1f1f1
+#b5bec1
+#7d8e94
+#476169
+
+# DARK GREEN TO GREEN-YELLOW PALETTE
+#106849
+#29814d
+#499b4c
+#6fb346
+#9bcb3b
