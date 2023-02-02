@@ -215,6 +215,11 @@ studentViewTabServer <- function(id, uploadedData) {
     output$myPlotBoxTitle <- renderText({"MySAEBERS TOTAL Behavior Distribution"})
     output$trsPlotBoxTitle <- renderText({"SAEBERS-TRS/SRS TOTAL Behavior Distribution"})
     
+    # observe({
+    #   selectedStudent$data <- subset(uploadedData(), ID == studentToView)
+    # })
+    
+    
     
     # ---- EVENT OBSERVERS ----
     

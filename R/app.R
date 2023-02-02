@@ -20,6 +20,8 @@ library(shinydashboardPlus) # For additional shiny dashboard skins and other vis
 #       the server functions may access them.
 #   - Add a source() call in the main midasApp function for each module.
 
+
+
 midasApp <- function() {
   source("./R/uploadTab.R")
   source("./R/studentViewTab.R")
@@ -85,6 +87,7 @@ midasApp <- function() {
         
       fluidPage(
         tabItems(
+          
           # Upload - Uploading Data to be sent to Dashboard
           uploadTabUI("uploadTab"),
           
@@ -103,12 +106,12 @@ midasApp <- function() {
   )
   
   # Server -----
-  server <- function(input, output) {
+  server <- function(input, output, session) {
     uploadedData <- uploadTabServer("uploadTab")
     studentViewTabServer("studentViewTab", uploadedData)
     
     schoolTabServer("dashboardTab", uploadedData)
-    classroomTabServer("classroomTab", uploadedData)
+    classroomTabServer("classroomTab", uploadedData, parent_session = session)
     popDemographicsTabServer("popDemographicsTab", uploadedData)
     popSaebersTabServer("popSaebersTab", uploadedData)
     popDataTabServer("popDataTab", uploadedData)

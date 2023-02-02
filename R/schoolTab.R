@@ -12,6 +12,7 @@ schoolTabUI <- function(id) {
         4,
         
         box(
+          # TODO: Change to high risk, med risk, low-risk proportions
           title = "Score Summary",
           # -- Average Risk --
           fluidRow(
@@ -140,7 +141,7 @@ schoolTabUI <- function(id) {
       )
       
     ),
-    # FINALLY!!!!!!
+    
     # TO ACCESS ELEMENTS FROM MODULE BY ID, DO {NS}-{id} .{child}
     
     tags$head(tags$style(HTML('
